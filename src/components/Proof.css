@@ -98,12 +98,15 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .proof__figures > div:nth-child(3) {
+  /* Sur deux colonnes, c'est la parité qui décide des bords — pas des
+     rangs figés. L'ancienne règle visait les 2e et 3e cellules et oubliait
+     la 4e, qui gardait une gouttière droite dont elle n'avait plus besoin. */
+  .proof__figures > div:nth-child(odd) {
     padding-inline-start: 0;
     border-inline-start: 0;
   }
 
-  .proof__figures > div:nth-child(2) {
+  .proof__figures > div:nth-child(even) {
     padding-inline-end: 0;
   }
 
@@ -112,13 +115,51 @@
   }
 }
 
-@media (max-width: 520px) {
+/* ─── Téléphone : les chiffres passent en relevé ──────────────────
+   Empilés en pleine largeur, les quatre blocs donnaient quatre filets
+   noirs de 2 px superposés et une section interminable — la même fiche
+   répétée quatre fois.
+
+   Ils deviennent un relevé : la valeur en colonne fixe, le libellé en
+   regard. Les valeurs s'alignent donc verticalement, la section tient en
+   un tiers de la hauteur, et un seul filet fort coiffe l'ensemble.
+   ───────────────────────────────────────────────────────────────── */
+
+@media (max-width: 560px) {
   .proof__figures {
     grid-template-columns: minmax(0, 1fr);
+    border-top: 2px solid var(--ink);
   }
 
   .proof__figures > div {
-    padding-inline: 0;
+    flex-direction: row;
+    align-items: baseline;
+    gap: 16px;
+    padding: 14px 0;
+    border-top: 0;
     border-inline-start: 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .proof__figures > div:last-child {
+    border-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  /* Colonne fixe : « 816 K » et « < 5 min » partent du même fer.
+     La largeur est dictée par la valeur la plus longue — « < 5 min »,
+     ~81 px à ce corps. `white-space: nowrap` est hérité : une colonne
+     trop étroite ne la ferait pas revenir à la ligne, elle la laisserait
+     empiéter sur le libellé. */
+  .proof__value {
+    flex: 0 0 6.25rem;
+    font-size: 1.5rem;
+    line-height: 1.1;
+  }
+
+  .proof__figures dd {
+    flex: 1;
+    min-width: 0;
+    gap: 3px;
   }
 }

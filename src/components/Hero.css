@@ -350,11 +350,11 @@
     max-width: 18ch;
   }
 
+  /* En pile, le signe est bridé et centré : à pleine largeur de tablette
+     il ferait 470 px de haut et écraserait le titre. */
   .hero__signal {
-    /* En pile, le signe passe devant le texte : on le ramène à une
-       largeur tenue et on le centre. */
-    margin-inline-end: 0;
-    max-width: 420px;
+    margin-inline: auto;
+    max-width: 440px;
   }
 
   .hero__mark {
@@ -366,7 +366,7 @@
   }
 }
 
-@media (max-width: 560px) {
+@media (max-width: 620px) {
   .specs {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -389,9 +389,19 @@
     gap: 8px;
   }
 
-  .hero__mark {
-    /* Plus de place pour que la lumière déborde : on la recoupe. */
-    overflow: hidden;
+  /* Sur téléphone, le signe passe PLEINE LARGEUR D'ÉCRAN.
+     Bridé dans la gouttière, il laissait un tiers de vide à droite : les
+     faisceaux s'y éteignent déjà, et l'œil lisait une illustration trop
+     petite posée dans du blanc. À pleine largeur il gagne un tiers de
+     taille et la lumière s'éteint au bord de l'écran, comme sur grand
+     écran.
+
+     Recadrer les faisceaux était l'autre piste : elle est écartée. Leur
+     dégradé ne s'annule qu'à x = 1140 ; couper avant laisse une arête
+     franche (opacité 0,33 à x = 1050, 0,62 à x = 950). */
+  .hero__signal {
+    margin-inline: calc(var(--gutter) * -1);
+    max-width: none;
   }
 }
 
