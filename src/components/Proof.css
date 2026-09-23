@@ -1,31 +1,37 @@
-.proof__figures {
+/* ═══════════════════════════════════════════════════════════════
+   Les chiffres
+
+   Une seule barre forte coiffe la grille, des filets d'un pixel séparent
+   les cellules. La version précédente posait un filet de 2 px sur CHAQUE
+   cellule : empilées sur téléphone, cela donnait quatre barres noires
+   superposées et la section se lisait comme un empilement de fiches.
+   ═══════════════════════════════════════════════════════════════ */
+
+.figures {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 0;
-  margin: clamp(48px, 6vw, 88px) 0 0;
+  margin: clamp(44px, 5.5vw, 80px) 0 0;
+  border-top: 2px solid var(--ink);
 }
 
-.proof__figures > div {
-  padding: clamp(22px, 2.6vw, 32px) clamp(18px, 2vw, 28px);
-  border-top: 2px solid var(--ink);
+.figures > div {
+  padding: clamp(20px, 2.4vw, 30px) clamp(16px, 2vw, 26px) clamp(20px, 2.4vw, 30px) 0;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 11px;
+  min-width: 0;
 }
 
-.proof__figures > div:first-child {
-  padding-inline-start: 0;
+.figures > div + div {
+  padding-inline-start: clamp(16px, 2vw, 26px);
+  border-inline-start: 1px solid var(--line);
 }
 
-.proof__figures > div + div {
-  border-inline-start: var(--rule) solid var(--line-strong);
-}
-
-.proof__figures > div:last-child {
+.figures > div:last-child {
   padding-inline-end: 0;
 }
 
-.proof__value {
+.figures__value {
   font-family: var(--font-display);
   font-size: clamp(2.25rem, 1.4rem + 3vw, 3.75rem);
   font-weight: 600;
@@ -35,53 +41,79 @@
   white-space: nowrap;
 }
 
-.proof__figures dd {
+.figures dd {
   margin: 0;
   display: flex;
   flex-direction: column;
   gap: 5px;
+  min-width: 0;
 }
 
-.proof__figures strong {
+.figures strong {
   font-family: var(--font-display);
   font-size: 0.9375rem;
   color: var(--ink);
 }
 
-.proof__figures span {
+.figures span {
   font-size: 0.8125rem;
   line-height: 1.5;
   color: var(--mute);
 }
 
-/* ─── Jalons ──────────────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════════
+   L'avancement
 
-.proof__steps {
+   Une progression, pas une liste : deux jalons accomplis, un en cours.
+   Pastille pleine pour ce qui est fait, cerclée pour l'étape courante —
+   l'état est déjà porté par les mots (« validé », « réalisé », face à
+   « industrialisation »), la pastille ne fait que le redire à l'œil.
+   ═══════════════════════════════════════════════════════════════ */
+
+.track {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: clamp(20px, 3vw, 44px);
   margin-top: clamp(44px, 5vw, 72px);
 }
 
-.proof__steps li {
+.track li {
+  position: relative;
+  padding-top: 20px;
+  border-top: 1px solid var(--line-strong);
   display: flex;
-  gap: 16px;
-  padding-top: 18px;
-  border-top: var(--rule) solid var(--line);
+  flex-direction: column;
+  gap: 5px;
 }
 
-.proof__step-n {
+/* La pastille est posée SUR le filet : le jalon se lit comme un point
+   d'étape, pas comme un titre parmi d'autres. */
+.track__dot {
+  position: absolute;
+  top: -5px;
+  inset-inline-start: 0;
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  border: 1px solid var(--brass);
+  background: var(--brass);
+}
+
+.track .is-current .track__dot {
+  background: var(--paper);
+  box-shadow: 0 0 0 3px var(--brass-wash);
+}
+
+.track__meta {
   color: var(--brass);
-  flex: 0 0 auto;
   letter-spacing: 0.08em;
 }
 
-.proof__steps h3 {
-  font-size: 1rem;
-  margin-bottom: 4px;
+.track h3 {
+  font-size: 1.0625rem;
 }
 
-.proof__steps p {
+.track__body {
   font-size: var(--t-small);
   line-height: 1.55;
   color: var(--body);
@@ -93,73 +125,88 @@
   color: var(--mute);
 }
 
+/* ═══════════════════════════════════════════════════════════════
+   Tablette : deux colonnes
+   ═══════════════════════════════════════════════════════════════ */
+
 @media (max-width: 900px) {
-  .proof__figures {
+  .figures {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  /* Sur deux colonnes, c'est la parité qui décide des bords — pas des
-     rangs figés. L'ancienne règle visait les 2e et 3e cellules et oubliait
-     la 4e, qui gardait une gouttière droite dont elle n'avait plus besoin. */
-  .proof__figures > div:nth-child(odd) {
+  /* Sur deux colonnes, c'est la parité qui décide des bords. */
+  .figures > div:nth-child(odd) {
     padding-inline-start: 0;
     border-inline-start: 0;
   }
 
-  .proof__figures > div:nth-child(even) {
+  .figures > div:nth-child(even) {
     padding-inline-end: 0;
   }
 
-  .proof__steps {
-    grid-template-columns: minmax(0, 1fr);
+  .figures > div:nth-child(n + 3) {
+    border-top: 1px solid var(--line);
   }
 }
 
-/* ─── Téléphone : les chiffres passent en relevé ──────────────────
-   Empilés en pleine largeur, les quatre blocs donnaient quatre filets
-   noirs de 2 px superposés et une section interminable — la même fiche
-   répétée quatre fois.
+/* ═══════════════════════════════════════════════════════════════
+   Téléphone
 
-   Ils deviennent un relevé : la valeur en colonne fixe, le libellé en
-   regard. Les valeurs s'alignent donc verticalement, la section tient en
-   un tiers de la hauteur, et un seul filet fort coiffe l'ensemble.
-   ───────────────────────────────────────────────────────────────── */
+   Les chiffres RESTENT en 2 × 2. Quatre valeurs courtes tiennent à deux
+   par rangée, et elles gardent ainsi la présence qui fait l'argument de
+   la section ; en pleine largeur elles auraient ajouté quatre rangées à
+   une section qui en comptait déjà sept.
+
+   Les jalons, eux, basculent en rail vertical : la progression se lit de
+   haut en bas, et le passage du plein au cerclé se voit d'un coup d'œil.
+   Deux objets distincts, au lieu d'une seule longue liste.
+   ═══════════════════════════════════════════════════════════════ */
 
 @media (max-width: 560px) {
-  .proof__figures {
+  .figures > div {
+    padding-block: 18px;
+    gap: 8px;
+  }
+
+  .figures__value {
+    font-size: clamp(1.875rem, 7vw, 2.5rem);
+  }
+
+  .figures strong {
+    font-size: 0.875rem;
+  }
+
+  .figures span {
+    font-size: 0.75rem;
+  }
+
+  /* ─── Le rail ─────────────────────────────────────────────── */
+
+  .track {
     grid-template-columns: minmax(0, 1fr);
-    border-top: 2px solid var(--ink);
+    gap: 0;
+    margin-top: clamp(36px, 7vw, 52px);
   }
 
-  .proof__figures > div {
-    flex-direction: row;
-    align-items: baseline;
-    gap: 16px;
-    padding: 14px 0;
+  .track li {
+    padding: 0 0 24px 26px;
     border-top: 0;
-    border-inline-start: 0;
-    border-bottom: 1px solid var(--line);
+    /* Le trait vertical qui relie les jalons entre eux. */
+    border-inline-start: 1px solid var(--line-strong);
   }
 
-  .proof__figures > div:last-child {
-    border-bottom: 0;
+  /* Le dernier n'a plus rien à relier : son trait s'arrête. */
+  .track li:last-child {
     padding-bottom: 0;
+    border-inline-start-color: transparent;
   }
 
-  /* Colonne fixe : « 816 K » et « < 5 min » partent du même fer.
-     La largeur est dictée par la valeur la plus longue — « < 5 min »,
-     ~81 px à ce corps. `white-space: nowrap` est hérité : une colonne
-     trop étroite ne la ferait pas revenir à la ligne, elle la laisserait
-     empiéter sur le libellé. */
-  .proof__value {
-    flex: 0 0 6.25rem;
-    font-size: 1.5rem;
-    line-height: 1.1;
+  .track__dot {
+    top: 4px;
+    inset-inline-start: -5px;
   }
 
-  .proof__figures dd {
-    flex: 1;
-    min-width: 0;
-    gap: 3px;
+  .track h3 {
+    font-size: 1rem;
   }
 }
