@@ -1,0 +1,205 @@
+/* ═══════════════════════════════════════════════════════════════
+   Le signe, en ouverture — `alive`
+
+   Règle unique : SEULE LA LUMIÈRE BOUGE. Opacité de la lampe et des
+   faisceaux, balayage clair le long des cônes, impulsions qui partent au
+   large. Le dessin du phare n'est ni tourné, ni mis à l'échelle, ni
+   incliné : la charte l'interdit, et deux essais précédents l'ont
+   confirmé à l'œil — un faisceau qui bascule donne un projecteur, pas un
+   phare.
+
+   Cadences : lampe 6,5 s, cônes 5,1 s, balayage 4,2 s, impulsions 5,6 /
+   6,8 / 6,2 s. Aucune n'est multiple d'une autre, donc le motif d'ensemble
+   ne se répète jamais à l'œil — là où des durées synchrones finiraient par
+   battre la mesure.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ─── Ouverture : le phare s'allume ───────────────────────────── */
+
+/* Le volet s'ouvre depuis la lanterne : la lumière se déploie vers le
+   large. La géométrie, elle, ne bouge pas — c'est le volet qui s'écarte. */
+.mk__wipe {
+  transform-box: fill-box;
+  transform-origin: left center;
+  animation: mk-wipe 1400ms cubic-bezier(0.22, 1, 0.36, 1) 420ms both;
+}
+
+@keyframes mk-wipe {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.mk .mk__lamp {
+  animation:
+    mk-ignite 900ms cubic-bezier(0.22, 1, 0.36, 1) 260ms both,
+    mk-breathe 6500ms ease-in-out 1200ms infinite;
+}
+
+@keyframes mk-ignite {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Respiration de la lampe : opacité seule. Elle s'intensifie, elle ne
+   grossit pas — une lanterne ne gonfle pas. */
+@keyframes mk-breathe {
+  0%,
+  100% {
+    opacity: 0.74;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* Enflement des cônes. Vue de côté, une optique de phare ne monte ni ne
+   descend : elle enfle quand le panneau arrive face à l'observateur. */
+.mk .mk__beams {
+  animation: mk-swell 5100ms ease-in-out 1600ms infinite;
+}
+
+@keyframes mk-swell {
+  0%,
+  100% {
+    opacity: 0.58;
+  }
+  50% {
+    opacity: 0.95;
+  }
+}
+
+/* ─── Balayage : la lumière file vers le large ────────────────── */
+
+.mk__sheen {
+  opacity: 0;
+  animation: mk-sheen 4200ms cubic-bezier(0.4, 0, 0.5, 1) 1800ms infinite;
+}
+
+@keyframes mk-sheen {
+  0% {
+    transform: translateX(-210px);
+    opacity: 0;
+  }
+  16% {
+    opacity: 0.8;
+  }
+  48% {
+    opacity: 0.45;
+  }
+  62%,
+  100% {
+    transform: translateX(545px);
+    opacity: 0;
+  }
+}
+
+/* ─── Impulsions : des signaux qui partent au large ───────────── */
+
+/* Chacune suit l'axe de son cône — la dérive verticale reprend la pente
+   du faisceau, si bien que l'impulsion reste dans la lumière au lieu
+   d'en sortir par le travers. */
+.mk__blip {
+  opacity: 0;
+}
+
+.mk__blip--a {
+  animation: mk-blip-low 5600ms linear 2200ms infinite;
+}
+
+.mk__blip--b {
+  animation: mk-blip-deep 6800ms linear 4400ms infinite;
+}
+
+.mk__blip--c {
+  animation: mk-blip-high 6200ms linear 3100ms infinite;
+}
+
+/* Cône bas : pente descendante d'environ 5,7°. */
+@keyframes mk-blip-low {
+  0% {
+    transform: translate(0, 0);
+    opacity: 0;
+  }
+  14% {
+    opacity: 0.9;
+  }
+  70% {
+    opacity: 0.5;
+  }
+  100% {
+    transform: translate(470px, 46px);
+    opacity: 0;
+  }
+}
+
+/* Cône bas, trajectoire basse : pente plus forte, pour que les deux
+   impulsions du même cône ne se suivent pas sur la même ligne. Vérifiée
+   contre les bords du cône — elle ne sort jamais de la lumière. */
+@keyframes mk-blip-deep {
+  0% {
+    transform: translate(0, 0);
+    opacity: 0;
+  }
+  14% {
+    opacity: 0.8;
+  }
+  70% {
+    opacity: 0.45;
+  }
+  100% {
+    transform: translate(470px, 92px);
+    opacity: 0;
+  }
+}
+
+/* Cône haut : pente montante d'environ 12°. */
+@keyframes mk-blip-high {
+  0% {
+    transform: translate(0, 0);
+    opacity: 0;
+  }
+  16% {
+    opacity: 0.75;
+  }
+  70% {
+    opacity: 0.4;
+  }
+  100% {
+    transform: translate(430px, -92px);
+    opacity: 0;
+  }
+}
+
+/* ─── Mouvement réduit : le phare est allumé, et immobile ─────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .mk__wipe {
+    animation: none;
+    transform: none;
+  }
+
+  .mk .mk__lamp,
+  .mk .mk__beams,
+  .mk__sheen,
+  .mk__blip {
+    animation: none;
+  }
+
+  .mk .mk__lamp,
+  .mk .mk__beams {
+    opacity: 1;
+  }
+
+  .mk__sheen,
+  .mk__blip {
+    opacity: 0;
+  }
+}

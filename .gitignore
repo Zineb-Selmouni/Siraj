@@ -1,0 +1,22 @@
+node_modules/
+dist/
+.env
+.env.local
+.env.*.local
+*.local
+.DS_Store
+.vite/
+tsconfig.tsbuildinfo
+
+# La charte et les decks sont des documents INTERNES. Les notes
+# d'intervention des .pptx ne sont pas destinées à un dépôt relié à un
+# hébergeur. src/styles/tokens.css est versionné à leur place — c'est lui
+# que le build consomme (voir scripts/build-tokens.mjs).
+Context/
+
+# Arbitrages de contenu : cite des notes d'intervention internes du deck
+# (dont la mise en garde sur le LLM externe). Hors dépôt.
+NOTES-INTERNES.md
+
+# Netlify
+.netlify/

@@ -1,0 +1,99 @@
+.offers__grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0;
+  margin-top: clamp(48px, 6vw, 88px);
+}
+
+.offers__grid > li {
+  padding: clamp(24px, 2.6vw, 34px) clamp(18px, 2vw, 28px);
+  border-top: 2px solid var(--ink);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.offers__grid > li:first-child {
+  padding-inline-start: 0;
+}
+
+.offers__grid > li + li {
+  border-inline-start: var(--rule) solid var(--line-strong);
+}
+
+.offers__grid > li:last-child {
+  padding-inline-end: 0;
+}
+
+.offers__grid h3 {
+  font-size: 1.25rem;
+}
+
+.offers__who {
+  color: var(--brass);
+  letter-spacing: 0.12em;
+  padding-bottom: 14px;
+  border-bottom: var(--rule) solid var(--line);
+}
+
+.offers__list {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  margin-top: 12px;
+}
+
+.offers__list li {
+  position: relative;
+  padding-inline-start: 18px;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--body);
+}
+
+/* La coche, tracée plutôt que posée en caractère. */
+.offers__list li::before {
+  content: '';
+  position: absolute;
+  inset-inline-start: 0;
+  top: 0.34em;
+  width: 8px;
+  height: 4px;
+  border-inline-start: 1.5px solid var(--brass);
+  border-bottom: 1.5px solid var(--brass);
+  transform: rotate(-45deg);
+}
+
+.offers__note {
+  margin-top: clamp(32px, 3.6vw, 48px);
+  padding-top: clamp(18px, 2vw, 26px);
+  border-top: var(--rule) solid var(--line-strong);
+  font-size: var(--t-small);
+  color: var(--body);
+}
+
+@media (max-width: 1000px) {
+  .offers__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .offers__grid > li:nth-child(3) {
+    padding-inline-start: 0;
+    border-inline-start: 0;
+  }
+
+  .offers__grid > li:nth-child(2) {
+    padding-inline-end: 0;
+  }
+}
+
+@media (max-width: 560px) {
+  .offers__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .offers__grid > li {
+    padding-inline: 0;
+    border-inline-start: 0;
+  }
+}

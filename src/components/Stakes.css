@@ -1,0 +1,94 @@
+.stakes__body {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  gap: clamp(32px, 5vw, 80px);
+  margin-top: clamp(48px, 6vw, 88px);
+  align-items: start;
+}
+
+/* Le chiffre d'échelle : c'est le sujet de la section, il en a la taille. */
+.stakes__stat {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  position: sticky;
+  top: 120px;
+}
+
+.stakes__value {
+  font-family: var(--font-display);
+  font-size: clamp(3.5rem, 2rem + 6vw, 6.5rem);
+  font-weight: 600;
+  line-height: 0.96;
+  letter-spacing: -0.022em;
+  color: var(--ink);
+}
+
+.stakes__stat figcaption {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 16px;
+  border-top: var(--rule) solid var(--line-strong);
+  max-width: 30ch;
+}
+
+.stakes__stat strong {
+  font-family: var(--font-display);
+  font-size: 1.0625rem;
+  color: var(--ink);
+}
+
+.stakes__stat span {
+  font-size: var(--t-small);
+  color: var(--mute);
+}
+
+/* Les risques : une liste réglée, pas des cartes. Un risque n'est pas un
+   produit, il ne s'emballe pas. */
+.stakes__risks > li {
+  display: grid;
+  grid-template-columns: 46px minmax(0, 1fr);
+  gap: 4px 18px;
+  align-items: baseline;
+}
+
+.stakes__n {
+  color: var(--brass);
+  grid-row: span 2;
+  letter-spacing: 0.08em;
+}
+
+.stakes__risk {
+  font-size: 1.1875rem;
+  letter-spacing: -0.008em;
+}
+
+.stakes__risks p {
+  font-size: var(--t-small);
+  line-height: 1.6;
+  color: var(--body);
+  max-width: 48ch;
+}
+
+@media (max-width: 900px) {
+  .stakes__body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .stakes__stat {
+    position: static;
+  }
+}
+
+@media (max-width: 480px) {
+  .stakes__risks > li {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 6px;
+  }
+
+  .stakes__n {
+    grid-row: auto;
+  }
+}

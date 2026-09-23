@@ -1,0 +1,117 @@
+.foot {
+  padding-block: clamp(48px, 6vw, 80px) clamp(24px, 3vw, 36px);
+  border-top: var(--rule) solid var(--ink-line);
+}
+
+.foot__top {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+  gap: clamp(32px, 4vw, 72px);
+  padding-bottom: clamp(32px, 4vw, 52px);
+  border-bottom: var(--rule) solid var(--ink-line);
+}
+
+.foot__mark {
+  width: 88px;
+  height: 57px;
+}
+
+.foot__baseline {
+  margin-top: 18px;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--on-dark);
+}
+
+.foot__tagline {
+  margin-top: 10px;
+  color: var(--brass-lit);
+  letter-spacing: 0.18em;
+  line-height: 1.6;
+}
+
+.foot__catalog {
+  margin-top: 8px;
+  color: var(--on-dark-mute);
+  letter-spacing: 0.1em;
+  max-width: 44ch;
+  line-height: 1.7;
+}
+
+.foot__details {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(18px, 2.4vw, 32px);
+  margin: 0;
+  align-content: start;
+}
+
+.foot__details div {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  padding-top: 14px;
+  border-top: var(--rule) solid var(--ink-line);
+}
+
+.foot__details dt {
+  color: var(--brass-lit);
+  letter-spacing: 0.14em;
+}
+
+.foot__details dd {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--on-dark-soft);
+  overflow-wrap: anywhere;
+  line-height: 1.5;
+}
+
+.foot__details a {
+  text-decoration: none;
+  border-bottom: var(--rule) solid transparent;
+  transition: border-color var(--t-fast) var(--ease);
+}
+
+.foot__details a:hover {
+  border-bottom-color: var(--brass-lit);
+}
+
+.foot__bottom {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding-top: clamp(20px, 2.4vw, 28px);
+  font-size: 0.8125rem;
+  color: var(--on-dark-mute);
+}
+
+.foot__legal {
+  display: flex;
+  gap: 24px;
+}
+
+.foot__legal a {
+  text-decoration: none;
+  transition: color var(--t-fast) var(--ease);
+}
+
+.foot__legal a:hover {
+  color: var(--on-dark);
+}
+
+@media (max-width: 860px) {
+  .foot__top {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .foot__details {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

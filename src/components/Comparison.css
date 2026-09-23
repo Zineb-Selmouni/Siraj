@@ -1,0 +1,125 @@
+.comparison__scroll {
+  margin-top: clamp(48px, 6vw, 88px);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.comparison__table {
+  width: 100%;
+  min-width: 680px;
+  border-collapse: collapse;
+}
+
+.comparison__table th,
+.comparison__table td {
+  padding: clamp(15px, 1.8vw, 22px) clamp(14px, 1.8vw, 24px);
+  text-align: start;
+  vertical-align: middle;
+  border-bottom: var(--rule) solid var(--line);
+}
+
+.comparison__table thead th {
+  color: var(--mute);
+  white-space: nowrap;
+  border-bottom-color: var(--line-strong);
+  padding-block: 12px;
+}
+
+.comparison__table tbody th {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.9375rem;
+  color: var(--ink);
+  padding-inline-start: 0;
+}
+
+.comparison__table td {
+  font-size: 0.875rem;
+  color: var(--mute);
+}
+
+/* Une seule colonne accentuée. Le reste reste volontairement sourd :
+   c'est le contraste qui fait la démonstration, pas la couleur partout. */
+.comparison__table .is-us {
+  color: var(--ink);
+  font-weight: 600;
+  background: var(--brass-wash);
+  box-shadow: inset 2px 0 0 0 var(--brass);
+}
+
+.comparison__table thead .is-us {
+  color: var(--brass);
+}
+
+.comparison__source {
+  margin-top: clamp(20px, 2.2vw, 28px);
+  color: var(--mute);
+  letter-spacing: 0.1em;
+}
+
+/* ─── Mobile : le tableau devient une pile de fiches ───────────
+   Quatre colonnes ne se lisent pas à 400 px, et un défilement horizontal
+   cache justement la colonne qui compte.
+   ────────────────────────────────────────────────────────────── */
+
+@media (max-width: 760px) {
+  .comparison__scroll {
+    overflow-x: visible;
+  }
+
+  .comparison__table {
+    min-width: 0;
+    display: block;
+  }
+
+  .comparison__table thead {
+    display: none;
+  }
+
+  .comparison__table tbody,
+  .comparison__table tbody tr {
+    display: block;
+  }
+
+  .comparison__table tbody tr {
+    border-top: var(--rule) solid var(--line-strong);
+    padding-block: 18px;
+  }
+
+  .comparison__table tbody th,
+  .comparison__table tbody td {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 7px 0;
+    border-bottom: 0;
+  }
+
+  .comparison__table tbody th {
+    font-family: var(--font-display);
+    font-size: 1.0625rem;
+    padding-bottom: 12px;
+  }
+
+  .comparison__table tbody td::before {
+    content: attr(data-label);
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--mute);
+    flex: 0 0 auto;
+  }
+
+  .comparison__table tbody td {
+    text-align: end;
+  }
+
+  .comparison__table .is-us {
+    box-shadow: none;
+    padding-inline: 12px;
+    margin-top: 4px;
+  }
+}

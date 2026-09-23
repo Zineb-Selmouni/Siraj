@@ -1,0 +1,51 @@
+/* Généré par scripts/build-tokens.mjs — NE PAS ÉDITER À LA MAIN. */
+/* Source : Context/Siraj360_design-tokens_v6.2_2026-09.json (charte 6.2.0) */
+
+:root {
+  /* — Couleurs de marque, invariantes dans les deux thèmes — */
+  --navy: #0B1B30;
+  --navy-card: #102640;
+  --navy-line: #2A4468;
+  --gold: #FFC933;
+  --gold-light: #FFD968;
+  --gold-text: #D89E15;
+  --paper: #F5F8FC;
+  --white: #FFFFFF;
+  --line: #E4EAF2;
+
+  /* — Texte sur fond sombre : constant, les slabs navy ne basculent pas — */
+  --on-slab: #FFFFFF;
+  --on-slab-soft: #C9D6E5;
+  --on-slab-muted: #8FA3BC;
+
+  /* — Sémantique : sentiment et alertes — */
+  --positive: #21B07A;
+  --negative: #E5484D;
+  --neutral: #2E90E5;
+  --vigilance: #F5A623;
+
+  /* — Familles de la CHARTE — */
+  /* Préfixées : la page compose en IBM Plex (voir theme.css) et ne doit
+     pas masquer silencieusement ces valeurs. Elles restent la référence
+     de la marque pour les supports imprimés et le signe. */
+  --charter-font-display: 'Sora', sans-serif;
+  --charter-font-body: 'Manrope', sans-serif;
+  --charter-font-arabic: 'Cairo', sans-serif;
+
+  /* — Espacement — */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-14: 56px;
+
+  /* — Rayons — */
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 18px;
+  --radius-tile: 22%;
+  --radius-pill: 999px;
+}

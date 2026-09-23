@@ -1,0 +1,122 @@
+/* ═══════════════════════════════════════════════════════════════
+   Thème de la page
+
+   La charte (tokens.css, généré) reste la vérité de la MARQUE : le signe
+   est dessiné avec ses couleurs exactes, et elles ne bougent pas.
+
+   Ce fichier définit la palette de la PAGE, qui s'en écarte volontairement
+   sur un point : l'or de la charte (#FFC933) est une couleur de signe, très
+   saturée. Étalée sur des bordures, des filets, des puces et des aplats,
+   elle fait retomber l'ensemble du côté du gabarit générique.
+
+   La page travaille donc en LAITON — un or rabattu, lisible sur papier —
+   et réserve l'or vif de la charte aux seuls points allumés (la lanterne du
+   signe, une pastille d'état). Un seul élément saturé dans un champ sourd
+   se remarque ; vingt ne se remarquent plus.
+
+   Second écart : le fond dominant passe du bleu-nuit au papier. Un document
+   institutionnel se lit sur clair ; le bleu-nuit devient la ponctuation —
+   ouverture, différenciateur, positionnement, passage à l'acte.
+   ═══════════════════════════════════════════════════════════════ */
+
+:root {
+  /* ─── Encre et surfaces sombres ─────────────────────────────── */
+  --ink-900: #0a1425;
+  --ink-800: #101f36;
+  --ink-700: #16293f;
+  --ink-line: #223751;
+
+  /* ─── Papier et surfaces claires ────────────────────────────── */
+  --paper: #f5f2ec;
+  --paper-raised: #fffdf9;
+  --paper-sunk: #efebe3;
+  --line: #e3ded3;
+  --line-strong: #d3cdbf;
+
+  /* ─── Texte ─────────────────────────────────────────────────── */
+  --ink: #101c2e;
+  --body: #4f4c46;
+  --mute: #8b8577;
+
+  --on-dark: #f5f2ec;
+  --on-dark-soft: #a7b2c2;
+  --on-dark-mute: #6d7c92;
+
+  /* ─── Laiton : l'accent de la page ──────────────────────────── */
+  --brass: #9a742a;
+  --brass-soft: #b89551;
+  --brass-lit: #e0b15a;
+  --brass-wash: rgb(154 116 42 / 0.08);
+
+  /* L'or vif de la charte. Réservé aux points allumés — jamais un aplat,
+     jamais une bordure. */
+  --lantern: #ffc933;
+
+  /* ─── Sentiment (charte color.semantic, rabattu) ────────────── */
+  --positive: #2f7d5c;
+  --neutral: #3d6b99;
+  --negative: #a8423f;
+  --positive-lit: #4bbd8b;
+  --neutral-lit: #5b9ad6;
+  --negative-lit: #d96b67;
+
+  /* ─── Typographie ───────────────────────────────────────────── */
+  /* Une seule superfamille, quatre rôles — y compris l'arabe.
+     Sora et Manrope, toutes deux linéales géométriques de proportions
+     voisines, ne créaient aucun écart de registre entre titre et texte.
+     Plex Serif / Plex Sans en créent un franc, de même souche.
+     Plex Sans Arabic remplace Cairo : le français et l'arabe partagent
+     enfin des proportions et une graisse — sur une page bilingue, c'est
+     un gain de fonctionnement autant que d'allure. */
+  --font-display: 'IBM Plex Serif', Georgia, 'Times New Roman', serif;
+  --font-body: 'IBM Plex Sans', system-ui, -apple-system, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', monospace;
+  --font-arabic: 'IBM Plex Sans Arabic', 'Noto Kufi Arabic', sans-serif;
+
+  --t-display: clamp(2.6rem, 1.5rem + 4.8vw, 5rem);
+  --t-title: clamp(1.9rem, 1.35rem + 2.4vw, 3.1rem);
+  --t-sub: clamp(1.25rem, 1.1rem + 0.7vw, 1.6rem);
+  --t-lede: clamp(1.0625rem, 1rem + 0.32vw, 1.25rem);
+  --t-body: 1rem;
+  --t-small: 0.875rem;
+  --t-mono: 0.6875rem;
+
+  /* ─── Rythme ────────────────────────────────────────────────── */
+  --gutter: clamp(20px, 4.4vw, 56px);
+  --measure: 60ch;
+  --band: clamp(76px, 9vw, 150px);
+  --rule: 1px;
+
+  /* Multiplicateur de direction : +1 en LTR, −1 en RTL. Il sert aux rares
+     décalages qui restent physiques — `translateX` ne connaît pas les
+     propriétés logiques. */
+  --dir: 1;
+
+  /* ─── Mouvement : une courbe, trois durées. Rien d'autre. ───── */
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --t-fast: 160ms;
+  --t-mid: 320ms;
+  --t-slow: 720ms;
+}
+
+/* Le thème sombre du visiteur n'inverse pas la page : elle est déjà
+   composée en clair et sombre alternés, et l'inverser casserait ce rythme.
+   On assombrit seulement le papier d'un cran pour qu'il ne brûle pas dans
+   une pièce noire. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --paper: #e8e4db;
+    --paper-raised: #f4f1ea;
+    --paper-sunk: #ded9cd;
+    --line: #d2ccbe;
+    --line-strong: #bdb6a5;
+  }
+}
+
+:root[data-theme='dark'] {
+  --paper: #e8e4db;
+  --paper-raised: #f4f1ea;
+  --paper-sunk: #ded9cd;
+  --line: #d2ccbe;
+  --line-strong: #bdb6a5;
+}

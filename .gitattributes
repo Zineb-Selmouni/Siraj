@@ -1,0 +1,10 @@
+# Fins de ligne normalisées en LF dans le dépôt.
+# Sans cela, un dépôt créé sous Windows arrive en CRLF chez un collaborateur
+# Linux — ou sur le build Netlify — et tout le projet apparaît modifié.
+* text=auto eol=lf
+
+# Binaires : jamais convertis.
+*.png binary
+*.jpg binary
+*.woff2 binary
+*.pptx binary

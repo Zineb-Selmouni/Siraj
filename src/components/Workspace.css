@@ -1,0 +1,90 @@
+/* ─── Les trois fonctions, en bandeau ─────────────────────────── */
+
+.ws__blocks {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: clamp(44px, 5.5vw, 76px);
+}
+
+.ws__blocks > li {
+  padding: clamp(20px, 2.4vw, 28px) clamp(20px, 2.4vw, 34px);
+  border-top: 2px solid var(--ink);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ws__blocks > li:first-child {
+  padding-inline-start: 0;
+}
+
+.ws__blocks > li + li {
+  border-inline-start: 1px solid var(--line-strong);
+}
+
+.ws__blocks > li:last-child {
+  padding-inline-end: 0;
+}
+
+.ws__meta {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  color: var(--ink);
+  letter-spacing: 0.1em;
+}
+
+.ws__meta .num {
+  color: var(--brass);
+}
+
+.ws__body {
+  font-size: var(--t-small);
+  line-height: 1.6;
+  color: var(--body);
+  max-width: 42ch;
+}
+
+/* ─── La console ──────────────────────────────────────────────── */
+
+.ws__console {
+  position: relative;
+  margin-top: clamp(32px, 4vw, 56px);
+}
+
+/* Un filet décalé derrière la console : elle est posée sur la page plutôt
+   que flottante, sans recourir à une ombre portée. */
+.ws__console::before {
+  content: '';
+  position: absolute;
+  inset: 14px -14px -14px 14px;
+  border: 1px solid var(--line-strong);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.ws__console .dash {
+  position: relative;
+  z-index: 1;
+}
+
+@media (max-width: 860px) {
+  .ws__blocks {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .ws__blocks > li {
+    padding-inline: 0;
+  }
+
+  .ws__blocks > li + li {
+    border-inline-start: 0;
+  }
+}
+
+@media (max-width: 620px) {
+  /* Le décalé sortirait de la gouttière sur petit écran. */
+  .ws__console::before {
+    display: none;
+  }
+}

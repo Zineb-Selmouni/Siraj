@@ -1,0 +1,124 @@
+.proof__figures {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0;
+  margin: clamp(48px, 6vw, 88px) 0 0;
+}
+
+.proof__figures > div {
+  padding: clamp(22px, 2.6vw, 32px) clamp(18px, 2vw, 28px);
+  border-top: 2px solid var(--ink);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.proof__figures > div:first-child {
+  padding-inline-start: 0;
+}
+
+.proof__figures > div + div {
+  border-inline-start: var(--rule) solid var(--line-strong);
+}
+
+.proof__figures > div:last-child {
+  padding-inline-end: 0;
+}
+
+.proof__value {
+  font-family: var(--font-display);
+  font-size: clamp(2.25rem, 1.4rem + 3vw, 3.75rem);
+  font-weight: 600;
+  line-height: 0.98;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.proof__figures dd {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.proof__figures strong {
+  font-family: var(--font-display);
+  font-size: 0.9375rem;
+  color: var(--ink);
+}
+
+.proof__figures span {
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--mute);
+}
+
+/* ─── Jalons ──────────────────────────────────────────────────── */
+
+.proof__steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(20px, 3vw, 44px);
+  margin-top: clamp(44px, 5vw, 72px);
+}
+
+.proof__steps li {
+  display: flex;
+  gap: 16px;
+  padding-top: 18px;
+  border-top: var(--rule) solid var(--line);
+}
+
+.proof__step-n {
+  color: var(--brass);
+  flex: 0 0 auto;
+  letter-spacing: 0.08em;
+}
+
+.proof__steps h3 {
+  font-size: 1rem;
+  margin-bottom: 4px;
+}
+
+.proof__steps p {
+  font-size: var(--t-small);
+  line-height: 1.55;
+  color: var(--body);
+}
+
+.proof__note {
+  margin-top: clamp(28px, 3vw, 40px);
+  font-size: 0.8125rem;
+  color: var(--mute);
+}
+
+@media (max-width: 900px) {
+  .proof__figures {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .proof__figures > div:nth-child(3) {
+    padding-inline-start: 0;
+    border-inline-start: 0;
+  }
+
+  .proof__figures > div:nth-child(2) {
+    padding-inline-end: 0;
+  }
+
+  .proof__steps {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 520px) {
+  .proof__figures {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .proof__figures > div {
+    padding-inline: 0;
+    border-inline-start: 0;
+  }
+}

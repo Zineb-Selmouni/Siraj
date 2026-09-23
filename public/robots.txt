@@ -1,0 +1,9 @@
+# Siraj 360 — Harmony Technology
+# Site public : tout est indexable.
+
+User-agent: *
+Allow: /
+
+# ⚠ Renseigner le domaine définitif une fois siraj360.ma réservé
+# (la charte note le domaine libre au 17/09/2026, à déposer).
+# Sitemap: https://siraj360.ma/sitemap.xml

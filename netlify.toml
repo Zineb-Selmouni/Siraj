@@ -1,0 +1,99 @@
+#  Siraj 360 — déploiement Netlify
+#
+#  Site statique : Vite compile vers dist/, Netlify sert le dossier tel quel.
+#  Aucune fonction, aucun rendu serveur.
+
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  # Épinglé : Netlify suit sa propre valeur par défaut, qui bouge.
+  NODE_VERSION = "22"
+  # Les devDependencies sont nécessaires au build (vite, typescript).
+  NPM_FLAGS = "--include=dev"
+
+# Les branches de prévisualisation ne doivent jamais être indexées.
+[context.deploy-preview]
+  command = "npm run build"
+
+[context.branch-deploy]
+  command = "npm run build"
+
+
+# ═══════════════════════════════════════════════════════════════════════
+#  En-têtes de sécurité
+#
+#  La politique de contenu est volontairement stricte : le build ne produit
+#  AUCUN script en ligne ni AUCUNE balise <style> (vérifié sur dist/), donc
+#  `script-src 'self'` suffit et il n'y a pas à ouvrir de brèche côté script.
+#
+#  `style-src` garde 'unsafe-inline' pour une seule raison : les attributs
+#  `style` en ligne que React pose pour les variables dynamiques (`--i`,
+#  largeurs de jauges, hauteurs de barres). C'est une tolérance de risque
+#  faible — contrairement à son équivalent script, elle ne permet pas
+#  l'exécution de code.
+# ═══════════════════════════════════════════════════════════════════════
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Content-Security-Policy = """
+      default-src 'self';
+      base-uri 'self';
+      object-src 'none';
+      frame-ancestors 'none';
+      form-action 'self';
+      script-src 'self';
+      style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+      font-src 'self' https://fonts.gstatic.com;
+      img-src 'self' data:;
+      connect-src 'self';
+      manifest-src 'self';
+      upgrade-insecure-requests
+      """
+
+    # Le site n'a aucune raison d'être encadré.
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Cross-Origin-Opener-Policy = "same-origin"
+    Cross-Origin-Resource-Policy = "same-origin"
+
+    # Aucune de ces interfaces n'est utilisée par la page.
+    Permissions-Policy = "accelerometer=(), autoplay=(), camera=(), display-capture=(), encrypted-media=(), fullscreen=(self), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), midi=(), payment=(), usb=(), xr-spatial-tracking=()"
+
+    # 1 an. `preload` est VOLONTAIREMENT absent : l'inscription sur la liste
+    # de préchargement des navigateurs est difficile à défaire, et elle
+    # engage tous les sous-domaines. À décider une fois le domaine définitif
+    # en place et l'ensemble des sous-domaines servis en HTTPS.
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains"
+
+
+# ── Cache ──────────────────────────────────────────────────────────────
+#  Les noms de fichiers d'assets portent une empreinte de contenu : ils
+#  peuvent être mis en cache indéfiniment. index.html, non — c'est lui qui
+#  désigne la version courante des assets.
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/index.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/favicon.svg"
+  [headers.values]
+    Cache-Control = "public, max-age=604800"
+
+
+# ── Redirections ───────────────────────────────────────────────────────
+#  PAS de repli SPA (`/* -> /index.html 200`). Le site n'a qu'une route et
+#  aucun routeur client : un tel repli renverrait la page d'accueil avec un
+#  code 200 pour n'importe quelle URL inexistante, ce qui masque les vraies
+#  404 aux visiteurs comme aux moteurs. Netlify sert sa page 404 — c'est le
+#  comportement correct ici.

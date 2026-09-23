@@ -1,0 +1,145 @@
+.pipeline__steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0;
+  margin-top: clamp(48px, 6vw, 88px);
+}
+
+.pipeline__steps > li {
+  padding: clamp(26px, 3vw, 38px) clamp(20px, 2.4vw, 34px);
+  border-top: 2px solid var(--ink);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pipeline__steps > li:first-child {
+  padding-inline-start: 0;
+}
+
+.pipeline__steps > li + li {
+  border-inline-start: var(--rule) solid var(--line-strong);
+}
+
+.pipeline__steps > li:last-child {
+  padding-inline-end: 0;
+}
+
+.pipeline__meta {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  color: var(--mute);
+}
+
+.pipeline__meta .num {
+  color: var(--brass);
+}
+
+.pipeline__title {
+  font-size: 1.375rem;
+  max-width: 14ch;
+}
+
+.pipeline__items {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.pipeline__items li {
+  position: relative;
+  padding-inline-start: 18px;
+  font-size: var(--t-small);
+  line-height: 1.55;
+  color: var(--body);
+}
+
+.pipeline__items li::before {
+  content: '';
+  position: absolute;
+  inset-inline-start: 0;
+  top: 0.62em;
+  width: 8px;
+  height: 1px;
+  background: var(--brass);
+}
+
+/* ─── Le flux, de la source à la restitution ──────────────────── */
+
+.pipeline__flow {
+  margin-top: clamp(52px, 6vw, 88px);
+  padding-top: clamp(24px, 2.6vw, 34px);
+  border-top: var(--rule) solid var(--line-strong);
+}
+
+.pipeline__flow-title {
+  color: var(--mute);
+  margin-bottom: clamp(20px, 2.2vw, 28px);
+}
+
+.pipeline__nodes {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: clamp(12px, 1.6vw, 24px);
+}
+
+.pipeline__nodes li {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-top: 16px;
+  border-top: var(--rule) solid var(--line);
+  position: relative;
+}
+
+/* Le point de passage, posé sur le filet. */
+.pipeline__nodes li::before {
+  content: '';
+  position: absolute;
+  top: -3px;
+  inset-inline-start: 0;
+  width: 5px;
+  height: 5px;
+  border-radius: 999px;
+  background: var(--brass);
+}
+
+.pipeline__node-name {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.9375rem;
+  color: var(--ink);
+}
+
+.pipeline__node-body {
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: var(--mute);
+}
+
+@media (max-width: 900px) {
+  .pipeline__steps {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .pipeline__steps > li {
+    padding-inline: 0;
+  }
+
+  .pipeline__steps > li + li {
+    border-inline-start: 0;
+  }
+
+  .pipeline__nodes {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .pipeline__nodes {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
