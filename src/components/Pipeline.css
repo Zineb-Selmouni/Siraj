@@ -1,54 +1,193 @@
-.pipeline__steps {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0;
-  margin-top: clamp(48px, 6vw, 88px);
+/* ═══════════════════════════════════════════════════════════════
+   La chaîne
+
+   Cinq nœuds techniques sur un rail, trois temps en portée au-dessus.
+   Une seule grille de cinq colonnes tient les trois rangées — portée,
+   rail, nœuds — si bien que tout reste aligné à n'importe quelle largeur.
+   ═══════════════════════════════════════════════════════════════ */
+
+.chain {
+  margin: clamp(44px, 5.5vw, 80px) 0 0;
+  padding: clamp(24px, 3vw, 40px) clamp(20px, 2.6vw, 34px) clamp(20px, 2.4vw, 30px);
+  border: 1px solid var(--line-strong);
+  background: var(--paper-raised);
 }
 
-.pipeline__steps > li {
-  padding: clamp(26px, 3vw, 38px) clamp(20px, 2.4vw, 34px);
+.chain__title {
+  color: var(--mute);
+  margin-bottom: clamp(22px, 2.6vw, 32px);
+}
+
+/* ─── Les trois temps, en portée ──────────────────────────────── */
+
+.chain__stages,
+.chain__nodes {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: clamp(10px, 1.4vw, 20px);
+}
+
+.chain__stage {
+  display: flex;
+  align-items: baseline;
+  gap: 9px;
+  padding: 0 0 9px;
+  border-bottom: 1px solid var(--brass);
+  /* La portée se dessine de gauche à droite à la révélation. */
+  transform-origin: left;
+}
+
+[dir='rtl'] .chain__stage {
+  transform-origin: right;
+}
+
+.chain__stage-n {
+  color: var(--brass);
+  letter-spacing: 0.08em;
+}
+
+.chain__stage-name {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.9375rem;
+  color: var(--ink);
+}
+
+/* ─── Le rail ─────────────────────────────────────────────────── */
+
+.chain__rail {
+  position: relative;
+  height: 22px;
+}
+
+.chain__line {
+  position: absolute;
+  inset-inline: 0;
+  top: 50%;
+  height: 1px;
+  background: var(--line-strong);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 900ms var(--ease) 120ms;
+}
+
+[dir='rtl'] .chain__line {
+  transform-origin: right;
+}
+
+[data-reveal].is-in .chain__line {
+  transform: scaleX(1);
+}
+
+/* ─── Les nœuds ───────────────────────────────────────────────── */
+
+.chain__nodes li {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  position: relative;
+}
+
+.chain__dot {
+  position: absolute;
+  top: -16px;
+  inset-inline-start: 0;
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  background: var(--paper-raised);
+  border: 1px solid var(--brass);
+  transform: scale(0);
+  transition: transform 420ms var(--ease);
+  transition-delay: calc(360ms + var(--i, 0) * 110ms);
+}
+
+[data-reveal].is-in .chain__dot {
+  transform: scale(1);
+}
+
+/* Le dernier nœud est l'aboutissement : il est plein. */
+.chain__nodes li:last-child .chain__dot {
+  background: var(--brass);
+}
+
+.chain__node-name {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.9375rem;
+  color: var(--ink);
+}
+
+.chain__node-body {
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: var(--mute);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chain__line {
+    transform: scaleX(1);
+  }
+  .chain__dot {
+    transform: scale(1);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Le détail des trois temps
+   ═══════════════════════════════════════════════════════════════ */
+
+.stages {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: clamp(40px, 5vw, 72px);
+}
+
+.stages > li {
+  padding: clamp(22px, 2.6vw, 32px) clamp(20px, 2.4vw, 34px) 0 0;
   border-top: 2px solid var(--ink);
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
-.pipeline__steps > li:first-child {
-  padding-inline-start: 0;
+.stages > li + li {
+  padding-inline-start: clamp(20px, 2.4vw, 34px);
+  border-inline-start: 1px solid var(--line-strong);
 }
 
-.pipeline__steps > li + li {
-  border-inline-start: var(--rule) solid var(--line-strong);
-}
-
-.pipeline__steps > li:last-child {
-  padding-inline-end: 0;
-}
-
-.pipeline__meta {
+.stages__meta {
   display: flex;
+  flex-wrap: wrap;
   align-items: baseline;
-  gap: 12px;
+  gap: 6px 12px;
   color: var(--mute);
 }
 
-.pipeline__meta .num {
+.stages__meta .num {
   color: var(--brass);
 }
 
-.pipeline__title {
-  font-size: 1.375rem;
-  max-width: 14ch;
+/* Rappel des nœuds couverts : le lien avec le schéma, en toutes lettres. */
+.stages__span {
+  flex: 1 1 100%;
+  color: var(--line-strong);
+  font-size: 0.5625rem;
 }
 
-.pipeline__items {
+.stages__title {
+  font-size: 1.3125rem;
+  max-width: 15ch;
+}
+
+.stages__items {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  margin-top: 6px;
+  margin-top: 2px;
 }
 
-.pipeline__items li {
+.stages__items li {
   position: relative;
   padding-inline-start: 18px;
   font-size: var(--t-small);
@@ -56,7 +195,7 @@
   color: var(--body);
 }
 
-.pipeline__items li::before {
+.stages__items li::before {
   content: '';
   position: absolute;
   inset-inline-start: 0;
@@ -66,80 +205,46 @@
   background: var(--brass);
 }
 
-/* ─── Le flux, de la source à la restitution ──────────────────── */
+/* ─── Responsive ──────────────────────────────────────────────── */
 
-.pipeline__flow {
-  margin-top: clamp(52px, 6vw, 88px);
-  padding-top: clamp(24px, 2.6vw, 34px);
-  border-top: var(--rule) solid var(--line-strong);
-}
+@media (max-width: 860px) {
+  /* Cinq nœuds côte à côte deviennent illisibles : le rail bascule à la
+     verticale et la portée disparaît — elle est redite dans le détail. */
+  .chain__stages {
+    display: none;
+  }
 
-.pipeline__flow-title {
-  color: var(--mute);
-  margin-bottom: clamp(20px, 2.2vw, 28px);
-}
+  .chain__rail {
+    display: none;
+  }
 
-.pipeline__nodes {
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: clamp(12px, 1.6vw, 24px);
-}
+  .chain__nodes {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
 
-.pipeline__nodes li {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding-top: 16px;
-  border-top: var(--rule) solid var(--line);
-  position: relative;
-}
+  .chain__nodes li {
+    padding: 14px 0 14px 22px;
+    border-inline-start: 1px solid var(--line-strong);
+  }
 
-/* Le point de passage, posé sur le filet. */
-.pipeline__nodes li::before {
-  content: '';
-  position: absolute;
-  top: -3px;
-  inset-inline-start: 0;
-  width: 5px;
-  height: 5px;
-  border-radius: 999px;
-  background: var(--brass);
-}
+  .chain__dot {
+    top: 18px;
+    inset-inline-start: -5px;
+    transform: scale(1);
+  }
 
-.pipeline__node-name {
-  font-family: var(--font-body);
-  font-weight: 600;
-  font-size: 0.9375rem;
-  color: var(--ink);
-}
-
-.pipeline__node-body {
-  font-size: 0.75rem;
-  line-height: 1.5;
-  color: var(--mute);
-}
-
-@media (max-width: 900px) {
-  .pipeline__steps {
+  .stages {
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .pipeline__steps > li {
+  .stages > li,
+  .stages > li + li {
     padding-inline: 0;
-  }
-
-  .pipeline__steps > li + li {
     border-inline-start: 0;
   }
 
-  .pipeline__nodes {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 24px;
-  }
-}
-
-@media (max-width: 480px) {
-  .pipeline__nodes {
-    grid-template-columns: minmax(0, 1fr);
+  .stages > li + li {
+    margin-top: clamp(24px, 3vw, 36px);
   }
 }

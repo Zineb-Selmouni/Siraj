@@ -48,6 +48,10 @@ export const fr = {
     statValue: '5 Mrd',
     statUnit: 'contenus par jour',
     statNote: 'publiés chaque jour sur les médias mondiaux, tous canaux confondus.',
+    /* Légendes du champ de bruit : c'est lui qui porte l'argument, le texte
+       ne fait que le nommer. */
+    fieldLabel: 'Ce que publient les médias, chaque jour',
+    fieldNote: 'Une poignée vous concerne. Encore faut-il la trouver.',
     risks: [
       {
         title: 'Perte d’image',

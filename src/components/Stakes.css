@@ -1,94 +1,202 @@
-.stakes__body {
+/* ═══════════════════════════════════════════════════════════════
+   Le volume : le chiffre et la trame
+   ═══════════════════════════════════════════════════════════════ */
+
+.volume {
   display: grid;
-  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
-  gap: clamp(32px, 5vw, 80px);
-  margin-top: clamp(48px, 6vw, 88px);
-  align-items: start;
+  grid-template-columns: minmax(0, 0.72fr) minmax(0, 1.28fr);
+  gap: clamp(28px, 4vw, 64px);
+  margin-top: clamp(44px, 5.5vw, 80px);
+  align-items: end;
 }
 
-/* Le chiffre d'échelle : c'est le sujet de la section, il en a la taille. */
-.stakes__stat {
+.volume__stat {
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  position: sticky;
-  top: 120px;
+  gap: 14px;
 }
 
-.stakes__value {
+.volume__value {
   font-family: var(--font-display);
-  font-size: clamp(3.5rem, 2rem + 6vw, 6.5rem);
+  font-size: clamp(3.25rem, 2rem + 5.5vw, 6rem);
   font-weight: 600;
   line-height: 0.96;
   letter-spacing: -0.022em;
   color: var(--ink);
 }
 
-.stakes__stat figcaption {
+.volume__stat figcaption {
   display: flex;
   flex-direction: column;
   gap: 8px;
   padding-top: 16px;
-  border-top: var(--rule) solid var(--line-strong);
-  max-width: 30ch;
+  border-top: 1px solid var(--line-strong);
+  max-width: 32ch;
 }
 
-.stakes__stat strong {
+.volume__stat strong {
   font-family: var(--font-display);
   font-size: 1.0625rem;
   color: var(--ink);
 }
 
-.stakes__stat span {
+.volume__stat figcaption span {
   font-size: var(--t-small);
   color: var(--mute);
 }
 
-/* Les risques : une liste réglée, pas des cartes. Un risque n'est pas un
-   produit, il ne s'emballe pas. */
-.stakes__risks > li {
-  display: grid;
-  grid-template-columns: 46px minmax(0, 1fr);
-  gap: 4px 18px;
-  align-items: baseline;
+/* ─── La trame ────────────────────────────────────────────────── */
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
 }
 
-.stakes__n {
+.field__label,
+.field__note {
+  color: var(--mute);
+}
+
+.field__note {
+  font-size: var(--t-small);
+  letter-spacing: 0;
+  text-transform: none;
+  font-family: var(--font-body);
+}
+
+.field__grid {
+  display: grid;
+  grid-template-columns: repeat(24, minmax(0, 1fr));
+  gap: clamp(5px, 0.8vw, 9px);
+  padding-block: clamp(14px, 1.8vw, 22px);
+  border-block: 1px solid var(--line);
+}
+
+/* Le flot : inerte, indifférencié, c'est tout le propos. */
+.field__dot {
+  aspect-ratio: 1;
+  border-radius: 1px;
+  background: var(--line-strong);
+  opacity: 0;
+  transform: scale(0.4);
+}
+
+[data-reveal].is-in .field__dot {
+  opacity: 0.85;
+  transform: none;
+  transition:
+    opacity 420ms var(--ease),
+    transform 420ms var(--ease);
+  transition-delay: var(--d, 0ms);
+}
+
+/* Les quelques marques qui vous concernent. Elles arrivent APRÈS la trame
+   — on voit d'abord la masse, puis ce qui s'en détache. */
+.field__dot.is-signal {
+  background: var(--brass);
+  border-radius: 0;
+}
+
+[data-reveal].is-in .field__dot.is-signal {
+  opacity: 1;
+  transform: scale(1.35);
+  box-shadow: 0 0 0 2px var(--brass-wash);
+  transition-delay: calc(var(--d, 0ms) + 700ms);
+}
+
+/* Sans JavaScript, ou en mouvement réduit, la trame est simplement là. */
+.js-reveal [data-reveal]:not(.is-in) .field__dot {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .field__dot {
+    opacity: 0.85;
+    transform: none;
+  }
+
+  .field__dot.is-signal {
+    opacity: 1;
+    transform: scale(1.35);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Les quatre risques, en rangée
+   ═══════════════════════════════════════════════════════════════ */
+
+.risks {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin-top: clamp(40px, 5vw, 72px);
+}
+
+.risks li {
+  padding: clamp(20px, 2.2vw, 28px) clamp(18px, 2vw, 26px) 0 0;
+  border-top: 2px solid var(--ink);
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.risks li + li {
+  padding-inline-start: clamp(18px, 2vw, 26px);
+  border-inline-start: 1px solid var(--line-strong);
+}
+
+.risks__n {
   color: var(--brass);
-  grid-row: span 2;
   letter-spacing: 0.08em;
 }
 
-.stakes__risk {
-  font-size: 1.1875rem;
-  letter-spacing: -0.008em;
+.risks h3 {
+  font-size: 1.0625rem;
 }
 
-.stakes__risks p {
+.risks p {
   font-size: var(--t-small);
   line-height: 1.6;
   color: var(--body);
-  max-width: 48ch;
 }
+
+/* ─── Responsive ──────────────────────────────────────────────── */
 
 @media (max-width: 900px) {
-  .stakes__body {
+  .volume {
     grid-template-columns: minmax(0, 1fr);
+    align-items: start;
   }
 
-  .stakes__stat {
-    position: static;
+  .risks {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .risks li:nth-child(odd) {
+    padding-inline-start: 0;
+    border-inline-start: 0;
+  }
+
+  .risks li:nth-child(n + 3) {
+    margin-top: clamp(20px, 2.4vw, 28px);
   }
 }
 
-@media (max-width: 480px) {
-  .stakes__risks > li {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 6px;
+@media (max-width: 560px) {
+  /* Moins de colonnes : les marques restent lisibles au lieu de se réduire
+     à des poussières. */
+  .field__grid {
+    grid-template-columns: repeat(16, minmax(0, 1fr));
   }
 
-  .stakes__n {
-    grid-row: auto;
+  .risks {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .risks li,
+  .risks li + li {
+    padding-inline: 0;
+    border-inline-start: 0;
   }
 }

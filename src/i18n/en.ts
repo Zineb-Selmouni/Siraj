@@ -47,6 +47,8 @@ export const en: Copy = {
     statValue: '5 bn',
     statUnit: 'contents per day',
     statNote: 'published every day across global media, all channels combined.',
+    fieldLabel: 'What the media publish, every day',
+    fieldNote: 'A handful concern you. They still have to be found.',
     risks: [
       {
         title: 'Reputation loss',
