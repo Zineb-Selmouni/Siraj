@@ -1,69 +1,40 @@
 /* ═══════════════════════════════════════════════════════════════
    La chaîne
 
-   Cinq nœuds techniques sur un rail, trois temps en portée au-dessus.
-   Une seule grille de cinq colonnes tient les trois rangées — portée,
-   rail, nœuds — si bien que tout reste aligné à n'importe quelle largeur.
+   Le rail est découpé en TROIS groupes de largeur égale — un par temps —
+   et chaque groupe se subdivise selon son nombre de nœuds. Les trois
+   colonnes de détail, plus bas, sont elles aussi des tiers : elles
+   tombent donc exactement sous leur groupe.
+
+   C'est cet alignement qui dit « Capter couvre Sources et Extraction ».
+   Les filets verticaux sont aux mêmes tiers dans les deux rangées, ce qui
+   rend la correspondance lisible sans un mot de plus.
    ═══════════════════════════════════════════════════════════════ */
 
 .chain {
   margin: clamp(44px, 5.5vw, 80px) 0 0;
-  padding: clamp(24px, 3vw, 40px) clamp(20px, 2.6vw, 34px) clamp(20px, 2.4vw, 30px);
+  padding: clamp(24px, 3vw, 38px) clamp(20px, 2.6vw, 32px) clamp(22px, 2.6vw, 32px);
   border: 1px solid var(--line-strong);
   background: var(--paper-raised);
 }
 
 .chain__title {
   color: var(--mute);
-  margin-bottom: clamp(22px, 2.6vw, 32px);
-}
-
-/* ─── Les trois temps, en portée ──────────────────────────────── */
-
-.chain__stages,
-.chain__nodes {
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: clamp(10px, 1.4vw, 20px);
-}
-
-.chain__stage {
-  display: flex;
-  align-items: baseline;
-  gap: 9px;
-  padding: 0 0 9px;
-  border-bottom: 1px solid var(--brass);
-  /* La portée se dessine de gauche à droite à la révélation. */
-  transform-origin: left;
-}
-
-[dir='rtl'] .chain__stage {
-  transform-origin: right;
-}
-
-.chain__stage-n {
-  color: var(--brass);
-  letter-spacing: 0.08em;
-}
-
-.chain__stage-name {
-  font-family: var(--font-display);
-  font-weight: 600;
-  font-size: 0.9375rem;
-  color: var(--ink);
+  margin-bottom: clamp(20px, 2.4vw, 30px);
 }
 
 /* ─── Le rail ─────────────────────────────────────────────────── */
 
 .chain__rail {
   position: relative;
-  height: 22px;
+  height: 1px;
+  margin-bottom: 18px;
 }
 
 .chain__line {
   position: absolute;
   inset-inline: 0;
-  top: 50%;
+  top: 0;
   height: 1px;
   background: var(--line-strong);
   transform: scaleX(0);
@@ -79,18 +50,40 @@
   transform: scaleX(1);
 }
 
-/* ─── Les nœuds ───────────────────────────────────────────────── */
+/* ─── Les groupes : trois tiers ───────────────────────────────── */
 
-.chain__nodes li {
+.chain__groups {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.chain__group {
+  display: grid;
+  grid-template-columns: repeat(var(--n, 1), minmax(0, 1fr));
+  gap: clamp(10px, 1.4vw, 20px);
+  padding-inline-end: clamp(14px, 1.8vw, 26px);
+}
+
+/* Les mêmes tiers que la rangée de détail, plus bas. */
+.chain__group + .chain__group {
+  padding-inline-start: clamp(14px, 1.8vw, 26px);
+  border-inline-start: 1px solid var(--line);
+}
+
+.chain__group:last-child {
+  padding-inline-end: 0;
+}
+
+.chain__group li {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 4px;
   position: relative;
 }
 
 .chain__dot {
   position: absolute;
-  top: -16px;
+  top: -23px;
   inset-inline-start: 0;
   width: 9px;
   height: 9px;
@@ -99,7 +92,7 @@
   border: 1px solid var(--brass);
   transform: scale(0);
   transition: transform 420ms var(--ease);
-  transition-delay: calc(360ms + var(--i, 0) * 110ms);
+  transition-delay: calc(340ms + var(--i, 0) * 110ms);
 }
 
 [data-reveal].is-in .chain__dot {
@@ -107,7 +100,7 @@
 }
 
 /* Le dernier nœud est l'aboutissement : il est plein. */
-.chain__nodes li:last-child .chain__dot {
+.chain__groups > :last-child li:last-child .chain__dot {
   background: var(--brass);
 }
 
@@ -134,45 +127,41 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   Le détail des trois temps
+   Les trois temps — le seul endroit où ils sont nommés
    ═══════════════════════════════════════════════════════════════ */
 
 .stages {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  margin-top: clamp(40px, 5vw, 72px);
+  margin-top: clamp(36px, 4.5vw, 64px);
 }
 
 .stages > li {
-  padding: clamp(22px, 2.6vw, 32px) clamp(20px, 2.4vw, 34px) 0 0;
+  padding: clamp(22px, 2.6vw, 30px) clamp(14px, 1.8vw, 26px) 0 0;
   border-top: 2px solid var(--ink);
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 11px;
 }
 
 .stages > li + li {
-  padding-inline-start: clamp(20px, 2.4vw, 34px);
+  padding-inline-start: clamp(14px, 1.8vw, 26px);
   border-inline-start: 1px solid var(--line-strong);
+}
+
+.stages > li:last-child {
+  padding-inline-end: 0;
 }
 
 .stages__meta {
   display: flex;
-  flex-wrap: wrap;
   align-items: baseline;
-  gap: 6px 12px;
-  color: var(--mute);
+  gap: 12px;
+  color: var(--ink);
 }
 
 .stages__meta .num {
   color: var(--brass);
-}
-
-/* Rappel des nœuds couverts : le lien avec le schéma, en toutes lettres. */
-.stages__span {
-  flex: 1 1 100%;
-  color: var(--line-strong);
-  font-size: 0.5625rem;
 }
 
 .stages__title {
@@ -205,31 +194,39 @@
   background: var(--brass);
 }
 
-/* ─── Responsive ──────────────────────────────────────────────── */
+/* ─── Responsive ──────────────────────────────────────────────────
+   En pile, l'alignement ne dit plus rien : le schéma se replie en une
+   liste verticale et les trois temps suivent. L'ordre de lecture porte
+   alors la correspondance.
+   ───────────────────────────────────────────────────────────────── */
 
 @media (max-width: 860px) {
-  /* Cinq nœuds côte à côte deviennent illisibles : le rail bascule à la
-     verticale et la portée disparaît — elle est redite dans le détail. */
-  .chain__stages {
-    display: none;
-  }
-
   .chain__rail {
     display: none;
   }
 
-  .chain__nodes {
+  .chain__groups,
+  .chain__group {
     grid-template-columns: minmax(0, 1fr);
     gap: 0;
   }
 
-  .chain__nodes li {
-    padding: 14px 0 14px 22px;
+  .chain__group {
+    padding-inline: 0;
+  }
+
+  .chain__group + .chain__group {
+    padding-inline-start: 0;
+    border-inline-start: 0;
+  }
+
+  .chain__group li {
+    padding: 13px 0 13px 22px;
     border-inline-start: 1px solid var(--line-strong);
   }
 
   .chain__dot {
-    top: 18px;
+    top: 17px;
     inset-inline-start: -5px;
     transform: scale(1);
   }
@@ -245,6 +242,6 @@
   }
 
   .stages > li + li {
-    margin-top: clamp(24px, 3vw, 36px);
+    margin-top: clamp(22px, 3vw, 34px);
   }
 }

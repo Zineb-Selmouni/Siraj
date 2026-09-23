@@ -4,30 +4,38 @@ import { SectionHead } from './SectionHead'
 import './Pipeline.css'
 
 /**
- * La solution, en un schéma puis en détail.
+ * La solution : la chaîne technique, puis les trois temps.
  *
- * La version précédente disait deux fois la même chose : trois colonnes de
- * texte (capter / comprendre / anticiper) PUIS une rangée de cinq nœuds
- * décrivant la même chaîne. D'où l'impression de remplissage.
+ * Écueil corrigé — chaque nom n'apparaît QU'UNE FOIS. La version
+ * précédente étiquetait le schéma avec « Capter / Comprendre / Anticiper »
+ * puis rouvrait les mêmes intitulés juste en dessous, en rappelant par
+ * écrit les nœuds couverts : trois répétitions pour une seule idée, et la
+ * section se lisait comme un bégaiement.
  *
- * Les deux sont désormais un seul objet : les cinq nœuds techniques posés
- * sur un rail, et les trois temps en portée au-dessus. On voit la chaîne
- * d'abord, on lit le détail ensuite.
- *
- * Combien de nœuds chaque temps recouvre — structure, pas contenu : cela
- * ne se traduit pas, donc cela ne vit pas dans les dictionnaires.
+ * Le lien entre les deux rangées passe désormais par l'ALIGNEMENT. Le rail
+ * est divisé en trois groupes de largeur égale — autant que de temps — et
+ * les trois colonnes de détail tombent exactement sous leur groupe. Le
+ * lecteur voit que « Capter » couvre Sources et Extraction parce que c'est
+ * physiquement au-dessus, pas parce qu'on le lui répète.
  */
-const STAGE_SPANS = [2, 2, 1]
+
+/** Nœuds couverts par chaque temps. Structure, donc hors dictionnaires. */
+const NODES_PER_STAGE = [2, 2, 1]
+
+/** Indice du premier nœud de chaque temps : 0, 2, 4. Constant, donc calculé
+    une fois au chargement du module — rien à muter pendant le rendu. */
+const STAGE_OFFSETS = NODES_PER_STAGE.map((_, i) =>
+  NODES_PER_STAGE.slice(0, i).reduce((sum, n) => sum + n, 0),
+)
 
 export function Pipeline() {
   const copy = useCopy()
   const { steps, flow } = copy.pipeline
 
-  // Indice du premier nœud de chaque temps : 0, 2, 4.
-  const starts: number[] = []
-  STAGE_SPANS.forEach((_, i) => {
-    starts.push(i === 0 ? 0 : starts[i - 1] + STAGE_SPANS[i - 1])
-  })
+  const groups = NODES_PER_STAGE.map((count, i) => ({
+    stage: steps[i],
+    nodes: flow.slice(STAGE_OFFSETS[i], STAGE_OFFSETS[i] + count),
+  }))
 
   return (
     <section className="band pipeline" id="plateforme">
@@ -43,51 +51,40 @@ export function Pipeline() {
         <figure className="chain" data-reveal>
           <figcaption className="chain__title mono">{copy.pipeline.flowTitle}</figcaption>
 
-          {/* Les trois temps, en portée au-dessus du rail. */}
-          <ol className="chain__stages" aria-hidden="true">
-            {steps.map((step, i) => (
-              <li
-                key={step.name}
-                className="chain__stage"
-                style={{ gridColumn: `span ${STAGE_SPANS[i]}`, '--i': i } as CSSProperties}
-              >
-                <span className="chain__stage-n mono num">
-                  {String(i + 1).padStart(2, '0')}
-                </span>
-                <span className="chain__stage-name">{step.name}</span>
-              </li>
-            ))}
-          </ol>
-
           <div className="chain__rail" aria-hidden="true">
             <span className="chain__line" />
           </div>
 
-          <ol className="chain__nodes">
-            {flow.map((node, i) => (
-              <li key={node.name} style={{ '--i': i } as CSSProperties}>
-                <span className="chain__dot" aria-hidden="true" />
-                <span className="chain__node-name">{node.name}</span>
-                <span className="chain__node-body">{node.body}</span>
-              </li>
+          <div className="chain__groups">
+            {groups.map(({ stage, nodes }, g) => (
+              <ol
+                key={stage.name}
+                className="chain__group"
+                style={{ '--n': nodes.length } as CSSProperties}
+                /* Le rattachement est visuel ; pour un lecteur d'écran il
+                   doit être énoncé. */
+                aria-label={stage.name}
+              >
+                {nodes.map((node, n) => (
+                  <li key={node.name} style={{ '--i': g * 2 + n } as CSSProperties}>
+                    <span className="chain__dot" aria-hidden="true" />
+                    <span className="chain__node-name">{node.name}</span>
+                    <span className="chain__node-body">{node.body}</span>
+                  </li>
+                ))}
+              </ol>
             ))}
-          </ol>
+          </div>
         </figure>
 
-        {/* Le détail des trois temps. La numérotation reprend celle du
-            schéma : ce sont les mêmes étapes, vues de plus près. */}
+        {/* Trois colonnes de largeur égale : elles tombent sous leur groupe
+            de nœuds. C'est le seul endroit où les temps sont nommés. */}
         <ol className="stages">
           {steps.map((step, i) => (
             <li key={step.name} data-reveal style={{ '--i': i } as CSSProperties}>
               <p className="stages__meta mono">
                 <span className="num">{String(i + 1).padStart(2, '0')}</span>
                 <span>{step.name}</span>
-                <span className="stages__span" aria-hidden="true">
-                  {flow
-                    .slice(starts[i], starts[i] + STAGE_SPANS[i])
-                    .map((n) => n.name)
-                    .join(' · ')}
-                </span>
               </p>
               <h3 className="stages__title">{step.title}</h3>
               <ul className="stages__items">
