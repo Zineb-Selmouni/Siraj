@@ -39,29 +39,21 @@
   flex: 0 0 auto;
 }
 
-.brand__mark {
-  width: 46px;
-  height: 30px;
+/* Le lockup dessiné remplace signe + nom composé. Il est dimensionné
+   par sa LARGEUR : son rapport (≈ 2,87) est celui du fichier, et le
+   laisser calculer sa hauteur évite toute déformation si la livraison
+   est recadrée un jour. */
+.brand__lockup {
+  width: clamp(92px, 9vw, 116px);
+  height: auto;
   flex: 0 0 auto;
 }
 
-.brand__text {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  line-height: 1;
-}
-
-.brand__name {
-  font-family: var(--font-body);
-  font-weight: 600;
-  font-size: 1.0625rem;
-  letter-spacing: -0.015em;
-  color: #fff;
-  white-space: nowrap;
-}
-
+/* Le descripteur passe à côté du lockup, derrière un filet : le nom est
+   déjà dans le dessin, cette ligne ne fait que situer le produit. */
 .brand__sub {
+  padding-inline-start: 11px;
+  border-inline-start: 1px solid var(--ink-line);
   color: var(--brass-lit);
   letter-spacing: 0.16em;
   font-size: 0.5625rem;
@@ -270,7 +262,7 @@
   }
 }
 
-@media (max-width: 400px) {
+@media (max-width: 560px) {
   .brand__sub {
     display: none;
   }

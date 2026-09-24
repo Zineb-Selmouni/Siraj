@@ -25,6 +25,7 @@ export const ar: Copy = {
     figures: 'الأرقام',
     offers: 'العروض',
     cta: 'اطلب نسخة تجريبية',
+    descriptor: 'رصد إعلامي',
     switchTo: 'اللغة',
   },
 

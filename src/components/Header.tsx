@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useLanguage } from '../i18n'
 import { LANGUAGES } from '../i18n/languages'
-import { SirajMark } from './SirajMark'
+import { SirajLogo } from './logo/SirajLogo'
 import './Header.css'
 
 export function Header() {
@@ -54,18 +54,14 @@ export function Header() {
     <header className={`nav${stuck ? ' is-stuck' : ''}`}>
       <div className="nav__inner shell">
         <a className="brand" href="#top" aria-label="Siraj 360">
-          <SirajMark className="brand__mark" />
-          <span className="brand__text">
-            {/*
-              La charte interdit de recomposer le mot-symbole dans une police :
-              c'est un dessin. Ce bloc rend le NOM, pas le lockup officiel —
-              déposer le SVG dans public/ et le substituer avant mise en ligne.
-            */}
-            <span className="brand__name">Siraj 360</span>
-            <span className="brand__sub mono">
-              {lang === 'fr' ? 'Veille médiatique' : 'Media intelligence'}
-            </span>
-          </span>
+          {/*
+            Le mot-symbole est désormais DESSINÉ (livraison « Siraj logo
+            refinement ») : chaque lettre est un tracé. La charte interdit
+            de le recomposer dans une police — ce bloc le simulait en Sora,
+            faute de fichier. Il ne le simule plus.
+          */}
+          <SirajLogo variant="compact" surface="dark" className="brand__lockup" />
+          <span className="brand__sub mono">{copy.nav.descriptor}</span>
         </a>
 
         <nav className="nav__links" aria-label="Navigation">

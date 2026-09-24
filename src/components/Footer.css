@@ -11,9 +11,12 @@
   border-bottom: var(--rule) solid var(--ink-line);
 }
 
+/* Le lockup complet ferme la page : le signe et le nom dessinés, à la
+   taille où les lettres restent lisibles. Hauteur laissée au rapport du
+   fichier. */
 .foot__mark {
-  width: 88px;
-  height: 57px;
+  width: clamp(150px, 20vw, 186px);
+  height: auto;
 }
 
 .foot__baseline {

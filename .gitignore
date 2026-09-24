@@ -14,6 +14,13 @@ tsconfig.tsbuildinfo
 # que le build consomme (voir scripts/build-tokens.mjs).
 Context/
 
+# Livraison de design du logo : SVG sources, PNG, et le fichier
+# d'animation (3 Mo de bundle React/Babel). Même règle que la charte —
+# src/components/logo/marks.ts est versionné à sa place, c'est lui que
+# le build consomme (voir scripts/build-logo.mjs).
+Siraj logo refinement/
+_motion.js
+
 # Arbitrages de contenu : cite des notes d'intervention internes du deck
 # (dont la mise en garde sur le LLM externe). Hors dépôt.
 NOTES-INTERNES.md

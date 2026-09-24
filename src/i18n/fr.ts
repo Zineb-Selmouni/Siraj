@@ -20,6 +20,7 @@ export const fr = {
     figures: 'Chiffres',
     offers: 'Offres',
     cta: 'Demander un pilote',
+    descriptor: 'Veille médiatique',
     switchTo: 'Switch to English',
   },
 

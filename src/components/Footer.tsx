@@ -1,6 +1,6 @@
 import { useCopy } from '../i18n'
 import { CONTACT_EMAIL, WEBSITE, WEBSITE_URL } from '../config'
-import { SirajMark } from './SirajMark'
+import { SirajLogo } from './logo/SirajLogo'
 import './Footer.css'
 
 export function Footer() {
@@ -12,7 +12,7 @@ export function Footer() {
       <div className="shell">
         <div className="foot__top">
           <div className="foot__brand">
-            <SirajMark className="foot__mark" />
+            <SirajLogo variant="compact" surface="dark" className="foot__mark" />
             <p className="foot__baseline">{copy.footer.baseline}</p>
             {/* La signature Siraj : elle avait disparu de la page lors de la
                 refonte du hero. Sa place est ici, sous le signe. */}

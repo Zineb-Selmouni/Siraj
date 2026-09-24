@@ -19,6 +19,7 @@ export const en: Copy = {
     figures: 'Figures',
     offers: 'Pricing',
     cta: 'Request a pilot',
+    descriptor: 'Media intelligence',
     switchTo: 'Passer en français',
   },
 

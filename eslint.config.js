@@ -12,7 +12,11 @@ import reactRefresh from 'eslint-plugin-react-refresh'
  * variables mortes, et quelques pièges propres au navigateur.
  */
 export default tseslint.config(
-  { ignores: ['dist', 'node_modules', 'src/styles/tokens.css'] },
+  // Fichiers générés : tokens.css par build-tokens, marks.ts par
+  // build-logo. Ni l'un ni l'autre n'est écrit à la main.
+  {
+    ignores: ['dist', 'node_modules', 'src/styles/tokens.css', 'src/components/logo/marks.ts'],
+  },
 
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended],

@@ -1,49 +1,145 @@
 /* ═══════════════════════════════════════════════════════════════
    Ouverture
 
-   Chorégraphie d'entrée, en CSS pur — le contenu est au-dessus de la
-   ligne de flottaison, il n'attend aucun observateur. Une seule courbe,
-   des retards croissants :
+   Le phare n'est plus un objet posé dans la section : il en est la
+   SOURCE LUMINEUSE. Le film passe derrière le texte, son faisceau
+   balaie le titre, et sa lumière se répand sur tout le hero.
+
+   C'était déjà dans le film, mais invisible. Pendant le repère Sweep,
+   le faisceau mesure 1500 unités et va de x = -790 à x = 2117 sur un
+   cadre large de 1920 : il traverse tout. Enfermé dans une plaque au
+   tiers de la section, l'essentiel du geste tombait hors champ.
+
+   Trois couches, dans cet ordre :
+
+     0  la nuit          fond de section
+     1  le film          transparent, derrière le texte
+     2  la nappe         lumière ambiante depuis la lanterne, sous le texte
+     3  le texte
+     4  le passage       lumière du faisceau, AU-DESSUS du texte
+
+   Le faisceau passe donc derrière les mots et sa lumière tombe dessus.
+   C'est ce qui se lit comme « le texte est éclairé » plutôt que
+   « un trait passe sur le texte ».
+
+   Chorégraphie d'entrée du texte, inchangée, en CSS pur :
 
      0,05 s  repère
      0,15 s  filet du repère
      0,25 s  titre (monte depuis son masque)
-     0,30 s  trait de lumière sur le titre
-     0,20 s  champ de lumière
      0,55 s  chapeau
      0,70 s  actions
-     0,40 s  signe (son allumage interne enchaîne)
      0,85 s+ bande de spécifications, cellule par cellule
+
+   Et, calés sur l'horloge du film :
+
+     2,35 s  le faisceau passe sur le texte
+     2,40 s  trait de lumière sur le titre
+     2,85 s  la nappe monte — le flot du film, devenu éclairage
    ═══════════════════════════════════════════════════════════════ */
 
 .hero {
+  /* ─── Les trois valeurs qui commandent la mise en scène ───────
+     La lanterne est ÉPINGLÉE à un point du hero. Dans le film elle se
+     trouve à (710, 238) sur 1920 × 1080, soit (36,98 %, 22,04 %) de
+     l'image : la translation négative de ces deux valeurs amène ce
+     point exactement sur --lantern-x / --lantern-y, quelle que soit la
+     taille du film ou de la fenêtre.
+
+     Elle est haute (30 %) pour deux raisons qui vont ensemble : le
+     dessin descend jusqu'à 90 % de l'image, il lui faut donc de la
+     place dessous ; et le faisceau part à l'horizontale à la hauteur
+     de la lanterne, c'est-à-dire en travers du titre. */
+  --lantern-x: 70%;
+  /* Remontée à 28 % : le dessin descend bas dans son image, et c'est en
+     HAUT que la section avait de la place — au-dessus du phare, là où
+     il n'y a que le faisceau. */
+  --lantern-y: 28%;
+  --hero-h: min(94vh, 940px);
+  /* La hauteur que la bande de spécifications prend en bas de section.
+     La scène s'arrête là. Sans cette réserve, le film était calé sur la
+     SECTION — dont la bande fait partie — et la signature du logo venait
+     se poser sur « 03 · veille temps réel ».
+
+     Mesurée large : la bande fait ~164 px au plus (marge 68 + fourrures
+     26/30 + deux lignes). Une réserve plus courte que la bande la
+     laisserait remonter dans la scène. */
+  --specs-reserve: clamp(130px, 16vh, 185px);
+  /* La lanterne, mais rapportée à la SECTION entière : la nappe couvre
+     aussi la bande du bas, donc son centre ne se mesure pas dans le
+     même cadre que le film. */
+  --glow-y: 24%;
+  /* Le film est dimensionné PAR SA HAUTEUR, pas par la largeur de la
+     fenêtre. Le dessin occupe 74 % de la hauteur de l'image, et la
+     section est plafonnée à 880 px : à 1920 de large, un film calé sur
+     la largeur mesurait 1045 px de dessin pour 828 px disponibles, et
+     le mot-symbole passait sous la section. Calé sur la hauteur, le
+     cadrage tient à toutes les largeurs. */
+  --film-h: 97%;
+
   position: relative;
   overflow: hidden;
-  /* Resserré : la barre de navigation occupe déjà sa place au-dessus. */
   padding-block: clamp(40px, 5vw, 76px) 0;
+  min-height: var(--hero-h);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
-/* ─── Champ de lumière ────────────────────────────────────────── */
+/* ─── La scène ────────────────────────────────────────────────── */
 
-.hero__field {
+/* La scène : tout sauf la bande du bas. C'est CE cadre que --lantern-y
+   découpe, si bien qu'un pourcentage y veut dire quelque chose — « à
+   31 % de l'espace disponible au-dessus de la bande » — au lieu d'un
+   pourcentage d'une section dont le bas est déjà occupé. */
+.hero__stage {
   position: absolute;
-  inset: -30% -10% auto 18%;
-  height: 150%;
-  background:
-    radial-gradient(
-      ellipse 46% 42% at 62% 34%,
-      rgb(255 201 51 / 0.16),
-      rgb(224 177 90 / 0.06) 44%,
-      transparent 72%
-    ),
-    linear-gradient(255deg, rgb(224 177 90 / 0.07) 0%, transparent 46%);
+  inset: 0 0 var(--specs-reserve);
+  z-index: 0;
   pointer-events: none;
-  animation:
-    field-in 1800ms var(--ease) 200ms both,
-    field-breathe 14s ease-in-out 2s infinite;
 }
 
-@keyframes field-in {
+/* La nappe ignore cette réserve : la lumière ne s'arrête pas au filet. */
+.hero__glow {
+  z-index: 0;
+}
+
+.hero__film {
+  position: absolute;
+  /* En pourcentage de la SCÈNE : le film suit donc la réserve du bas,
+     et le cadrage se recalcule tout seul si elle change. */
+  height: var(--film-h);
+  width: auto;
+  left: var(--lantern-x);
+  top: var(--lantern-y);
+  /* La lanterne dans son image. Ne pas toucher sans remesurer. */
+  transform: translate(-36.98%, -22.04%);
+  /* Le faisceau sort largement de l'image : sans cela il serait coupé
+     à son bord, ce qui lui retire précisément la course qu'on veut
+     voir. La section, elle, coupe (overflow: hidden). */
+  overflow: visible;
+}
+
+/* ─── La nappe ────────────────────────────────────────────────── */
+
+/* Le flot du film. Dans la livraison c'est un disque de papier qui
+   envahit l'image ; ici il n'envahit plus une image, il éclaire une
+   section. Même départ, même durée, même courbe : Sweep + 0,35 s,
+   1,5 s, easeInOutCubic. */
+.hero__glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 78% 116% at var(--lantern-x) var(--glow-y),
+    rgb(255 214 130 / 0.26) 0%,
+    rgb(233 182 98 / 0.14) 28%,
+    rgb(150 128 96 / 0.055) 56%,
+    transparent 76%
+  );
+  animation: hero-glow 1500ms cubic-bezier(0.645, 0.045, 0.355, 1) 2850ms both;
+}
+
+@keyframes hero-glow {
   from {
     opacity: 0;
   }
@@ -52,24 +148,58 @@
   }
 }
 
-@keyframes field-breathe {
-  0%,
-  100% {
-    opacity: 0.82;
+/* ─── Le passage du faisceau ──────────────────────────────────── */
+
+/* QUAND. Le faisceau part à 180° — plein gauche, à la hauteur de la
+   lanterne — puis remonte vers 344°. Il n'est donc en travers du texte
+   qu'au tout début de sa course : passé ~200°, il est déjà au-dessus.
+   En progression, 200° c'est 12 % de la course ; avec l'easeInOutCubic
+   du moteur sur 1,7 s à partir de 2,4 s, cela tombe à 2,93 s. Le
+   passage est donc calé sur 2,35 → 3,15 s, et la nappe enchaîne juste
+   après : le faisceau passe, puis la pièce s'éclaire.
+
+   COMBIEN. `screen` à 0,30 : le fond monte à ~8 % de luminance, ce qui
+   laisse le texte blanc à plus de 8:1. À 0,42, on tombait à 4,6:1 —
+   au ras du seuil, pour un gain visuel nul. */
+.hero__rake {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  background: linear-gradient(
+    174deg,
+    transparent 36%,
+    rgb(255 228 168 / 0.3) 50%,
+    transparent 64%
+  );
+  background-size: 100% 300%;
+  background-repeat: no-repeat;
+  animation: hero-rake 900ms cubic-bezier(0.645, 0.045, 0.355, 1) 2350ms both;
+}
+
+@keyframes hero-rake {
+  0% {
+    background-position: 0 118%;
+    opacity: 0;
   }
-  50% {
+  20% {
     opacity: 1;
+  }
+  100% {
+    background-position: 0 -38%;
+    opacity: 0;
   }
 }
 
 /* ─── Grille ──────────────────────────────────────────────────── */
 
+/* Une seule colonne. Le film n'est plus un élément de la grille : il
+   est derrière, et c'est la largeur du texte qui lui laisse la droite
+   libre (le titre plafonne à 15ch, le chapeau à 46ch). */
 .hero__grid {
   position: relative;
-  display: grid;
-  grid-template-columns: minmax(0, 1.12fr) minmax(0, 0.88fr);
-  gap: clamp(28px, 3.5vw, 60px);
-  align-items: center;
+  z-index: 1;
 }
 
 /* ─── Repère ──────────────────────────────────────────────────── */
@@ -152,7 +282,10 @@
   background-size: 260% 100%;
   background-repeat: no-repeat;
   pointer-events: none;
-  animation: streak 1700ms var(--ease) 300ms both;
+  /* Calé sur le passage du faisceau, et non plus sur l'entrée du
+     titre : c'est la lumière du phare qui traverse le titre, pas un
+     effet de chargement. */
+  animation: streak 1700ms var(--ease) 2400ms both;
 }
 
 @keyframes streak {
@@ -186,31 +319,6 @@
   gap: 12px;
   margin-top: clamp(22px, 2.4vw, 32px);
   animation: rise 800ms var(--ease) 700ms both;
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   Le signe
-
-   Il déborde du cadre à droite : les faisceaux s'éteignent en fondu, donc
-   la coupe au bord de section se lit comme une lumière qui porte au-delà
-   de la page — pas comme une image tronquée. Aucune transformation ne lui
-   est appliquée ; seule son opacité entre en scène, et son allumage
-   interne prend le relais (voir SirajMark.css).
-   ═══════════════════════════════════════════════════════════════ */
-
-.hero__signal {
-  position: relative;
-  margin-inline-end: calc(var(--gutter) * -1);
-  animation: fade 1200ms var(--ease) 400ms both;
-}
-
-.hero__mark {
-  display: block;
-  width: 118%;
-  max-width: none;
-  height: auto;
-  overflow: visible;
-  filter: drop-shadow(0 22px 52px rgb(0 0 0 / 0.5));
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -301,15 +409,6 @@
   }
 }
 
-@keyframes fade {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
 @keyframes draw {
   from {
     transform: scaleX(0);
@@ -337,32 +436,55 @@
 }
 
 @media (max-width: 900px) {
+  /* ─── En pile ───────────────────────────────────────────────
+     Sur écran étroit, le film ne peut plus passer DERRIÈRE le texte :
+     le mot-symbole occuperait la même bande que le chapeau.
+
+     Il ENTRE DONC DANS LE FLUX, entre la colonne et la bande du bas.
+     Le recouvrement devient impossible par construction, au lieu
+     d'être évité par un calcul de pourcentages — c'est précisément ce
+     calcul qui posait la signature sur « 03 · veille temps réel ».
+
+     La hauteur réservée est CALCULÉE à partir de --film-w (voir la
+     scène ci-dessous) : les deux ne peuvent donc pas se désaccorder si
+     l'un change. */
   .hero {
+    --lantern-x: 50%;
+    --film-w: 132vw;
+
+    min-height: auto;
     padding-block: clamp(32px, 6vw, 56px) 0;
   }
 
+  .hero__stage {
+    position: relative;
+    inset: auto;
+    order: 1;
+    /* La réserve DÉCOULE de la taille du film : le dessin fait 74 % de
+       la hauteur de l'image, laquelle fait la largeur / 1,778. Soit
+       0,74 / 1,778 = 0,4163 de la largeur. Changer --film-w ajuste donc
+       la réserve toute seule — les deux ne peuvent pas se désaccorder. */
+    height: calc(var(--film-w) * 0.4163);
+    margin-top: clamp(20px, 5vw, 36px);
+  }
+
   .hero__grid {
-    grid-template-columns: minmax(0, 1fr);
-    gap: clamp(28px, 5vw, 44px);
+    order: 0;
   }
 
-  .hero__title {
-    max-width: 18ch;
+  .specs {
+    order: 2;
   }
 
-  /* En pile, le signe est bridé et centré : à pleine largeur de tablette
-     il ferait 470 px de haut et écraserait le titre. */
-  .hero__signal {
-    margin-inline: auto;
-    max-width: 440px;
-  }
-
-  .hero__mark {
-    width: 100%;
-  }
-
-  .hero__field {
-    inset: -20% -20% auto -10%;
+  /* Le dessin n'est pas centré dans son image — il occupe 25,9→69,5 %
+     en largeur et 16→90 % en hauteur. C'est donc SON centre (47,7 %,
+     53 %) qu'on amène au milieu de la réserve, pas celui de l'image. */
+  .hero__film {
+    left: 50%;
+    top: 50%;
+    width: var(--film-w);
+    height: auto;
+    transform: translate(-47.7%, -53%);
   }
 }
 
@@ -389,36 +511,37 @@
     gap: 8px;
   }
 
-  /* Sur téléphone, le signe passe PLEINE LARGEUR D'ÉCRAN.
-     Bridé dans la gouttière, il laissait un tiers de vide à droite : les
-     faisceaux s'y éteignent déjà, et l'œil lisait une illustration trop
-     petite posée dans du blanc. À pleine largeur il gagne un tiers de
-     taille et la lumière s'éteint au bord de l'écran, comme sur grand
-     écran.
+  /* Le film déborde des deux côtés : la lumière s'éteint au bord de
+     l'écran au lieu de s'arrêter dans la gouttière. La réserve suit. */
+  .hero {
+    --film-w: 176vw;
+  }
+}
 
-     Recadrer les faisceaux était l'autre piste : elle est écartée. Leur
-     dégradé ne s'annule qu'à x = 1140 ; couper avant laisse une arête
-     franche (opacité 0,33 à x = 1050, 0,62 à x = 950). */
-  .hero__signal {
-    margin-inline: calc(var(--gutter) * -1);
-    max-width: none;
+/* ─── Mouvement réduit ────────────────────────────────────────────
+   Le film saute à sa dernière image : la nappe doit être allumée tout
+   de suite, sans attendre son retard de 2,85 s. Le passage du faisceau,
+   lui, n'a plus d'objet — c'est un geste, pas un état.
+   ───────────────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .hero__glow {
+    animation-delay: 0ms !important;
+    opacity: 1;
+  }
+
+  .hero__rake {
+    display: none;
   }
 }
 
 /* ─── Sens de lecture ─────────────────────────────────────────────
-   La composition ne se retourne PAS. Le signe reste physiquement à
-   droite, débordant vers l'extérieur : la charte interdit de le mettre
-   en miroir, et retourné, ses faisceaux éclaireraient le titre au lieu
-   du large. Seule la colonne de texte repasse en RTL.
+   La scène ne se retourne PAS. La charte interdit de mettre le signe en
+   miroir, et retourné, son faisceau balaierait vers le large au lieu du
+   titre — c'est-à-dire l'inverse de ce que toute cette mise en scène
+   cherche. Le film garde donc sa position physique (`left`, et non une
+   propriété logique) ; seule la colonne de texte repasse en RTL.
    ───────────────────────────────────────────────────────────────── */
-
-[dir='rtl'] .hero__grid {
-  direction: ltr;
-}
-
-[dir='rtl'] .hero__text {
-  direction: rtl;
-}
 
 [dir='rtl'] .hero__ref-label,
 [dir='rtl'] .hero__ref-loc {

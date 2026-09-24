@@ -6,8 +6,10 @@
   "description": "Landing page Siraj 360 — plateforme de veille médiatique et d'intelligence stratégique (Harmony Technology)",
   "scripts": {
     "tokens": "node scripts/build-tokens.mjs",
-    "dev": "npm run tokens && vite",
-    "build": "npm run tokens && tsc -b && vite build",
+    "logo": "node scripts/build-logo.mjs",
+    "assets": "npm run tokens && npm run logo",
+    "dev": "npm run assets && vite",
+    "build": "npm run assets && tsc -b && vite build",
     "preview": "vite preview",
     "typecheck": "tsc -b --noEmit",
     "lint": "eslint .",

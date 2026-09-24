@@ -36,18 +36,45 @@ prend le plus récent par ordre alphabétique) et relancer `npm run dev`.
 
 ### Le signe
 
-`src/components/SirajMark.tsx` redessine le phare — dôme, lanterne, galerie,
-tour, écharpe, faisceaux, vague et écho — à partir des tracés et dégradés
-exacts de `logo.geometry` dans la charte. Les interdits de la charte sont
-respectés : pas de recoloration, pas d'aplat des dégradés, lanterne allumée,
-écharpe solidaire de la tour, aucune rotation.
+Le logo vient désormais de la livraison de design **« Siraj logo refinement »**
+(SVG, PNG, et un fichier d'animation). Il remplace le signe qui était
+reconstruit à la main d'après `logo.geometry`.
 
-> ⚠ **Le mot-symbole « SIRAJ360 » n'est pas reproduit.** La charte l'interdit
-> explicitement : « Ne jamais retaper le mot-symbole dans une police : c'est un
-> dessin. » Le header affiche donc le **nom** en Sora, pas le lockup officiel.
-> Avant mise en ligne, déposer le SVG officiel du mot-symbole dans `public/` et
-> le substituer dans `src/components/Header.tsx` (le point est commenté dans le
-> fichier).
+`scripts/build-logo.mjs` transforme les SVG livrés en
+`src/components/logo/marks.ts`. Comme la charte, la livraison est **hors
+dépôt** ; c'est le fichier généré qui est versionné, et c'est lui que le build
+consomme. `npm run logo` le régénère, `npm run assets` enchaîne charte et logo,
+et `dev` comme `build` appellent `assets`.
+
+Le script fait quatre choses, chacune nécessaire :
+
+|                       |                                                                                                                                                                  |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Métadonnées           | chaque SVG embarque un manifeste C2PA en base64 — près de 8 ko sur 17, soit 45 % du fichier, qu'aucun navigateur ne lit                                          |
+| Identifiants          | les variantes déclarent les mêmes ids de dégradés ; sur une même page, `url(#siraj-gold-metal)` résoudrait au hasard de l'ordre du DOM. Préfixés `sjs-` / `sjc-` |
+| Classes               | chaque groupe nommé reçoit une classe stable (`sj-beam`, `sj-lantern`…), pour que l'animation vise la même chose d'une variante à l'autre                        |
+| Encre sur fond sombre | voir la réserve ci-dessous                                                                                                                                       |
+
+Deux lockups sont exposés : `symbol` (le signe seul) et `compact` (signe +
+mot-symbole). La variante `full` est écartée — elle compose sa signature en
+`<text>` avec **Jost**, une police que la page ne charge pas ; le rendu
+dépendrait de ce qui est installé sur la machine du visiteur.
+
+> ✅ **Le mot-symbole est enfin DESSINÉ.** La charte interdit de le recomposer
+> dans une police — « c'est un dessin » — et la page, faute de fichier, le
+> simulait en Sora dans l'en-tête. La livraison fournit chaque lettre en
+> tracé (`sj-letter-S`, `-I`, `-R`, `-A`, `-J`). L'en-tête et le pied de page
+> affichent maintenant le **lockup officiel**. Le contournement est levé.
+
+> ⚠ **L'encre sur fond sombre est DÉDUITE, à faire confirmer.** La livraison ne
+> contient que des lockups pour fond clair : `_white` ne fait qu'ajouter un
+> rectangle blanc derrière le même dessin. Or l'encre du mot-symbole est un
+> charbon `#17191C`, qui tombe à **1,05:1** sur le bleu-nuit de la page —
+> invisible. `build-logo.mjs` en dérive une version claire en remappant cinq
+> valeurs de gris (28 occurrences). **Le signe seul n'est pas concerné** : il
+> ne porte aucune de ces valeurs et était déjà lisible sur fond sombre. À
+> arbitrer avec le studio avant mise en ligne — soit la version dérivée est
+> validée, soit un lockup sur fond sombre est livré.
 
 ---
 
@@ -173,33 +200,145 @@ Dix sections numérotées, un seul motif d'en-tête (`SectionHead`), et un
 rythme de fonds qui réserve le bleu-nuit aux quatre moments qui portent :
 ouverture, différenciateur, positionnement, passage à l'acte.
 
-### Le signe animé
+### Le film du logo
 
-`alive` allume la version d'ouverture. **Seule la lumière bouge** — la
-géométrie du phare n'est ni tournée, ni mise à l'échelle, ni inclinée.
+La livraison comprend sa propre séquence : `Animation/SIRAJ_animation.html`.
+Elle est jouée **telle quelle**. Le fichier livré n'est pas embarquable — 3 Mo
+de React en UMD, Babel standalone, un moteur de composition générique et un
+panneau de réglages — mais la SCÈNE, elle, est reprise à l'identique dans
+`src/components/logo/reveal/`. Le moteur est remplacé par une horloge de
+quelques lignes ; le panneau de réglages disparaît, ses valeurs par défaut
+figées telles que la livraison les pose (`intro: Night`, `gold: Classic`).
 
-|            |                                                                                    |
-| ---------- | ---------------------------------------------------------------------------------- |
-| Allumage   | la lampe s'ouvre, puis un volet écarte la lumière depuis la lanterne vers le large |
-| Lampe      | respiration en opacité, 6,5 s                                                      |
-| Cônes      | enflement 5,1 s — vue de côté, une optique de phare enfle, elle ne bascule pas     |
-| Balayage   | la lumière file vers le large toutes les 4,2 s                                     |
-| Impulsions | trois signaux partent au large, 5,6 / 6,8 / 6,2 s                                  |
+`motion.ts` porte les trois courbes du moteur (`easeOutCubic`,
+`easeInOutCubic`, `easeOutBack`) et la table `OM_SCENES` :
 
-Aucune cadence n'est multiple d'une autre : le motif d'ensemble ne se répète
-donc jamais à l'œil, là où des durées synchrones finiraient par battre la
-mesure.
+| Repère  | Début | Durée |                                                                     |
+| ------- | ----- | ----- | ------------------------------------------------------------------- |
+| Dark    | 0,0 s | 1,2 s | A single ember glows in the dark                                    |
+| Ignite  | 1,2 s | 1,3 s | The lantern flares and the tower is lit from the top down           |
+| Sweep   | 2,5 s | 1,8 s | The beam sweeps over and floods the frame with light                |
+| Build   | 4,3 s | 2,0 s | Waves flow in, the bars rise and the arc draws                      |
+| Name    | 6,3 s | 1,8 s | SIRAJ rises letter by letter and the gold triangle drops into the A |
+| Tagline | 8,1 s | 1,6 s | Gold rules extend; subtitle and tagline settle                      |
+| Hold    | 9,7 s | 2,4 s | A glint crosses the gold wave while the beam breathes               |
 
-> Les trajectoires des impulsions sont **vérifiées contre les bords des
-> cônes** : chacune suit la pente de son faisceau et ne sort jamais de la
-> lumière. La deuxième démarrait 8 % trop bas et se faisait découper au
-> départ — corrigé. Toute modification de ces coordonnées doit être
-> revérifiée contre `logo.geometry`.
+Douze secondes une, **lues une seule fois** (`OM_PLAYBACK.count = 1`), puis le
+film se fige sur sa dernière image. En mouvement réduit, il s'ouvre directement
+dessus.
 
-> **Deux pistes essayées et écartées, à ne pas réintroduire :** un faisceau
-> d'ambiance tournant (l'or à faible opacité sur du bleu-nuit vire au gris,
-> et le lobe opposé lançait une traînée à contresens) et un pivot des cônes
-> de ±7° (deux triangles pleins qui basculent — effet projecteur, pas phare).
+> **Ce fichier est une transcription, pas une création.** Chaque nombre, chaque
+> couleur, chaque tracé vient du film. Une vérification automatique compare les
+> littéraux de la source et du port : couleurs et chemins sont identiques au
+> caractère près, et les seuls écarts numériques sont la taille fixe
+> `1920 × 1080` — remplacée par une mise à l'échelle en CSS — et l'étiquette de
+> déboguage. Ne pas « améliorer » une valeur ici sans la changer à la source.
+
+**Deux écarts assumés, et pourquoi.** Le film fixait sa scène à 1920 × 1080 en
+dur ; la page la laisse se mettre à l'échelle, sinon elle déborderait de toute
+fenêtre plus étroite. Et le film mesurait son sous-titre au canvas en supposant
+Jost déjà chargée ; la page re-mesure une fois `document.fonts` prête, sans quoi
+les deux filets d'or qui encadrent le sous-titre se placeraient d'après la
+police de repli.
+
+**Jost.** Le film compose son sous-titre et sa signature en Jost et embarque la
+fonte dans son bundle. `build-logo.mjs` l'en extrait vers `public/fonts/` —
+latin et latin-ext ; le cyrillique est laissé de côté, aucune des deux lignes
+n'en contient un caractère. La reprendre là plutôt que chez Google évite de
+faire dépendre d'un serveur américain une page qui vend l'hébergement
+souverain. La livraison ne fournit que la graisse 500 et la déclare pour 500 ET
+600 : le 600 est donc **synthétisé** par le navigateur. La page fait pareil.
+
+> ⚠ **Le film est en français, en dur.** « PLATEFORME DE VEILLE » et « ÉCLAIRER
+> AUJOURD'HUI, ANTICIPER DEMAIN » sont composés dans la scène livrée. Ils
+> s'affichent donc aussi sur les versions anglaise et arabe. Les traduire
+> ferait diverger la page du film : à arbitrer avec le studio, qui seul peut
+> livrer les trois versions.
+
+### Le phare éclaire la section
+
+Le film n'est pas un objet posé dans le hero : il en est la **source
+lumineuse**. Il passe derrière le texte, son faisceau balaie le titre, et sa
+lumière se répand sur toute la section.
+
+C'était déjà dans le film, mais invisible. Pendant le repère Sweep, le faisceau
+mesure 1500 unités et va de x = -790 à x = 2117 sur un cadre large de 1920 : il
+traverse tout. Enfermé dans une plaque au tiers de la section, l'essentiel du
+geste tombait hors champ.
+
+|     | Couche     |                                                    |
+| --- | ---------- | -------------------------------------------------- |
+| 4   | le passage | lumière du faisceau, **au-dessus** du texte        |
+| 3   | le texte   |                                                    |
+| 2   | la nappe   | lumière ambiante depuis la lanterne, sous le texte |
+| 1   | le film    | transparent, derrière le texte                     |
+| 0   | la nuit    | fond de section                                    |
+
+Le faisceau passe donc derrière les mots et sa lumière tombe dessus. C'est ce
+qui se lit comme « le texte est éclairé » plutôt que « un trait passe sur le
+texte ».
+
+**Le calage vient du film.** Le faisceau part à 180° — plein gauche, à hauteur
+de lanterne — puis remonte vers 344°. Il n'est en travers du texte qu'au début
+de sa course : passé ~200°, il est déjà au-dessus. En progression c'est 12 % ;
+avec l'easeInOutCubic du moteur sur 1,7 s à partir de 2,4 s, cela tombe à
+2,93 s. D'où :
+
+| 2,35 s | le faisceau passe sur le texte                     |
+| ------ | -------------------------------------------------- |
+| 2,40 s | le trait de lumière traverse le titre              |
+| 2,85 s | la nappe monte — le flot du film, devenu éclairage |
+
+La nappe reprend exactement le flot de la livraison : `Sweep + 0,35 s`, 1,5 s,
+easeInOutCubic. Dans le film c'est un disque de papier qui envahit l'image ;
+ici il n'envahit plus une image, il éclaire une section. Le repère dit « floods
+the frame with light » — le cadre, désormais, c'est le hero.
+
+**Le cadrage.** La lanterne est ÉPINGLÉE à un point de la section. Dans le film
+elle est à (710, 238) sur 1920 × 1080, soit (36,98 %, 22,04 %) de l'image : une
+translation négative de ces deux valeurs amène ce point sur `--lantern-x` /
+`--lantern-y` quelle que soit la taille. Elle est haute (30 %) pour deux
+raisons liées : le dessin descend jusqu'à 90 % de l'image, il lui faut de la
+place dessous ; et le faisceau part à l'horizontale à hauteur de lanterne,
+c'est-à-dire en travers du titre.
+
+> Le film est dimensionné **par sa hauteur**, pas par la largeur de la fenêtre.
+> Le dessin occupe 74 % de la hauteur de l'image : calé sur la largeur, il
+> mesurait 1045 px de dessin pour 828 px disponibles à 1920, et le mot-symbole
+> passait sous la section. Le cadrage tient maintenant de 1280 à 1920, avec 78
+> à 206 px entre le titre et le dessin.
+
+**La scène s'arrête au-dessus de la bande de spécifications.** C'est elle qui
+borne le film, et non la section — la bande fait partie de la section, si bien
+qu'un film calé sur la hauteur totale venait poser la signature du logo sur
+« 03 · veille temps réel ». `--specs-reserve` retire cette hauteur, et
+`--lantern-y` se mesure dans ce qui reste : un pourcentage y veut dire quelque
+chose. La nappe, elle, ignore la réserve — la lumière ne s'arrête pas à un
+filet. Vérifié de 700 à 1200 px de fenêtre : 28 à 82 px de marge en haut, 30 à
+44 px en bas, pour un dessin de 380 à 555 px.
+
+**En pile, le film entre dans le flux**, entre la colonne et la bande du bas.
+Le recouvrement devient impossible par construction au lieu d'être évité par un
+calcul de pourcentages — c'est ce calcul qui, appliqué à la hauteur totale,
+posait le film sur le texte suivant. La hauteur réservée est dérivée de
+`--film-w` (`× 0,4163`, soit 74 % du dessin rapporté au format 16:9), donc les
+deux ne peuvent pas se désaccorder.
+
+> ⚠ **L'encre du film a été adaptée au fond sombre.** Le film ayant été composé
+> pour finir sur du papier, son mot-symbole est un charbon qui tombe à 1,13:1
+> sur le bleu-nuit, sa signature à 2,17:1. Quatre valeurs, invisibles. Elles
+> passent aux équivalents clairs du signe fixe (12,3 à 15,6:1). **Tout le reste
+> est intact** — la tour blanche était déjà à 18,4:1, la vague pâle à 11,9:1,
+> et les ors n'ont pas bougé. Comme pour le signe, la dérivation reste à faire
+> confirmer par le studio.
+
+> Le passage de lumière est à `screen` 0,30, ce qui laisse le texte blanc à
+> **7,7:1** sur le fond éclairé. À 0,42 on tombait à 5,2:1 pour un gain visuel
+> nul.
+
+**Le signe, lui, ne bouge pas.** `SirajLogo` (en-tête, pied de page) est fixe.
+Une seconde animation écrite à la main en serait une variante non livrée : deux
+gestes différents pour une même marque.
 
 ---
 
@@ -286,14 +425,14 @@ Gain annexe : une requête tierce de moins au chargement.
 
 ### Reste à faire
 
-|                          |                                                                            |
-| ------------------------ | -------------------------------------------------------------------------- |
-| Polices auto-hébergées   | voir ci-dessus — le point le plus important                                |
-| Mot-symbole officiel     | déposer le SVG dans `public/`, substituer dans `Header.tsx`                |
-| Coordonnées commerciales | `src/config.ts` — `contact@harmony.ma` est un emplacement                  |
-| Domaine                  | `siraj360.ma` à réserver ; renseigner ensuite `Sitemap:` dans `robots.txt` |
-| Formulaire Netlify       | activer _Forms_ dans les réglages du site après le premier déploiement     |
-| Mentions légales / RGPD  | les deux liens du pied de page pointent vers une ancre de la page          |
+|                                 |                                                                            |
+| ------------------------------- | -------------------------------------------------------------------------- |
+| Polices auto-hébergées          | voir ci-dessus — le point le plus important                                |
+| Encre du lockup sur fond sombre | variante déduite par `build-logo.mjs` — faire valider par le studio        |
+| Coordonnées commerciales        | `src/config.ts` — `contact@harmony.ma` est un emplacement                  |
+| Domaine                         | `siraj360.ma` à réserver ; renseigner ensuite `Sitemap:` dans `robots.txt` |
+| Formulaire Netlify              | activer _Forms_ dans les réglages du site après le premier déploiement     |
+| Mentions légales / RGPD         | les deux liens du pied de page pointent vers une ancre de la page          |
 
 ## Trilingue : عربية · français · English
 
@@ -359,7 +498,7 @@ Le demander à la direction commerciale avant de modifier la copie.
 ```
 src/
 ├─ components/      un composant + une feuille de style par section
-│  ├─ SirajMark     le signe, tracés issus de la charte
+│  ├─ logo/         SirajLogo + marks.ts (généré) + la chorégraphie
 │  ├─ Hero · Header · SectionHead
 │  ├─ Stakes · Pipeline · Workspace · Dashboard
 │  ├─ Darija · Proof · UseCases · Comparison

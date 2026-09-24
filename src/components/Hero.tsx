@@ -1,5 +1,5 @@
 import { useCopy } from '../i18n'
-import { SirajMark } from './SirajMark'
+import { SirajReveal } from './logo/reveal/SirajReveal'
 import './Hero.css'
 
 /**
@@ -24,8 +24,17 @@ export function Hero() {
 
   return (
     <section className="hero band--dark" id="top">
-      {/* Le champ de lumière : il lave la section depuis la lanterne. */}
-      <div className="hero__field" aria-hidden="true" />
+      {/* La scène : le film, puis la lumière qu'il jette sur la section.
+          Le film n'est plus un objet POSÉ dans le hero, il en est la
+          source lumineuse — d'où sa place derrière le texte. */}
+      <div className="hero__glow" aria-hidden="true" />
+
+      {/* La scène s'arrête AU-DESSUS de la bande de spécifications : c'est
+          elle qui borne le film, pas la section. La nappe, elle, reste sur
+          toute la hauteur — la lumière ne s'arrête pas à un filet. */}
+      <div className="hero__stage">
+        <SirajReveal surface="dark" className="hero__film" title={copy.hero.markAlt} />
+      </div>
 
       <div className="hero__grid shell">
         <div className="hero__text">
@@ -69,11 +78,11 @@ export function Hero() {
             </a>
           </div>
         </div>
-
-        <div className="hero__signal">
-          <SirajMark alive className="hero__mark" title={copy.hero.markAlt} />
-        </div>
       </div>
+
+      {/* Le passage du faisceau sur le texte. Au-DESSUS de la colonne :
+          le faisceau passe derrière les mots, sa lumière tombe dessus. */}
+      <div className="hero__rake" aria-hidden="true" />
 
       <ul className="specs shell">
         {/* Le nom et son sens ouvrent la bande : « سراج », la lampe. */}

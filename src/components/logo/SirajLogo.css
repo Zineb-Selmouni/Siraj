@@ -1,0 +1,12 @@
+/* Le signe, fixe. Son animation est celle de la livraison — voir
+   reveal/SirajReveal.tsx. Rien n'est animé ici.
+
+   Spécificité nulle : la largeur est posée par l'emplacement (en-tête,
+   pied de page), qui doit gagner quel que soit l'ordre des feuilles. */
+
+:where(.sj) {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
