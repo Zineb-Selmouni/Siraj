@@ -1,0 +1,79 @@
+/* ═══════════════════════════════════════════════════════════════
+   Les références
+
+   Une bande de logos se lit comme une liste d'égaux : même hauteur
+   optique, une seule couleur, aucun cadre. Les logos clients arrivent
+   dans des formats et des couleurs qu'on ne choisit pas ; les aligner
+   sur une hauteur commune et les ramener à l'encre de la page évite
+   qu'un logo rouge vif écrase ses voisins.
+   ═══════════════════════════════════════════════════════════════ */
+
+.refs__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1px;
+  margin-top: clamp(40px, 5vw, 72px);
+  background: var(--line);
+  border: 1px solid var(--line);
+}
+
+.refs__grid > li {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: clamp(92px, 10vw, 128px);
+  padding: 20px 24px;
+  background: var(--paper);
+}
+
+.refs__grid img {
+  max-width: 100%;
+  max-height: clamp(34px, 4vw, 46px);
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  /* Une seule couleur : la bande se lit d'un coup d'œil au lieu de
+     devenir un patchwork. Au survol, le logo reprend ses couleurs. */
+  filter: grayscale(1) contrast(0.2) brightness(0.55);
+  opacity: 0.85;
+  transition:
+    filter var(--t-mid) var(--ease),
+    opacity var(--t-mid) var(--ease);
+}
+
+.refs__grid > li:hover img {
+  filter: none;
+  opacity: 1;
+}
+
+/* ─── Gabarit ─────────────────────────────────────────────────────
+   Visiblement inachevé, et c'est le but : un emplacement hachuré ne
+   peut pas se confondre avec un logo. Il ne s'affiche jamais en
+   production (voir src/proof.ts).
+   ───────────────────────────────────────────────────────────────── */
+
+.refs__grid--draft > li {
+  flex-direction: column;
+  gap: 8px;
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--paper),
+    var(--paper) 7px,
+    var(--paper-sunk) 7px,
+    var(--paper-sunk) 14px
+  );
+  color: var(--mute);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+}
+
+.refs__grid--draft .mono {
+  color: var(--brass);
+  font-size: 0.6875rem;
+}
+
+.refs__note {
+  margin-top: clamp(22px, 2.4vw, 32px);
+  font-size: 0.8125rem;
+  color: var(--mute);
+}

@@ -1,0 +1,108 @@
+/* ═══════════════════════════════════════════════════════════════
+   Les témoignages
+
+   Deux colonnes, pas de carte encadrée : un filet en tête et un guillemet
+   suffisent à poser la citation. La signature est en bas, séparée du
+   propos — c'est elle qui fait la preuve, elle mérite sa place.
+   ═══════════════════════════════════════════════════════════════ */
+
+.quotes__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(28px, 4vw, 64px);
+  margin-top: clamp(40px, 5vw, 72px);
+}
+
+.quotes__grid > li {
+  padding-top: clamp(20px, 2.2vw, 28px);
+  border-top: 2px solid var(--ink);
+}
+
+.quotes__grid figure {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.quotes__grid blockquote {
+  margin: 0;
+  flex: 1;
+}
+
+.quotes__grid blockquote p {
+  font-family: var(--font-display);
+  font-size: clamp(1.0625rem, 0.95rem + 0.5vw, 1.375rem);
+  line-height: 1.5;
+  color: var(--ink);
+}
+
+.quotes__grid blockquote p::before {
+  content: '\201C';
+  color: var(--brass);
+}
+
+.quotes__grid figcaption {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-top: clamp(18px, 2vw, 26px);
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+
+.quotes__grid figcaption strong {
+  font-family: var(--font-display);
+  font-size: 0.9375rem;
+  color: var(--ink);
+}
+
+.quotes__grid figcaption span {
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--mute);
+}
+
+.quotes__org {
+  color: var(--brass);
+  letter-spacing: 0.08em;
+  font-size: 0.6875rem;
+}
+
+/* ─── Gabarit ─────────────────────────────────────────────────────
+   Les CHAMPS à recueillir, et rien d'autre. Pas de fausse citation,
+   même en gabarit : elle serait attribuée à une personne nommée.
+   ───────────────────────────────────────────────────────────────── */
+
+.quotes__grid--draft > li {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border-top-color: var(--line-strong);
+}
+
+.quotes__mark {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  line-height: 1;
+  color: var(--brass-wash);
+}
+
+.quotes__field {
+  padding: 10px 14px;
+  border: 1px dashed var(--line-strong);
+  border-radius: 2px;
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  color: var(--mute);
+}
+
+.quotes__field--quote {
+  min-height: clamp(84px, 9vw, 116px);
+}
+
+@media (max-width: 760px) {
+  .quotes__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

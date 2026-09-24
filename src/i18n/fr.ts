@@ -458,6 +458,17 @@ export const fr = {
     footnote: 'Chiffres publiés par Harmony sur harmony.ma.',
   },
 
+  references: {
+    eyebrow: 'Références',
+    title: 'Ils nous font confiance.',
+    lede: 'Organisations publiques et privées qui utilisent les solutions Harmony.',
+    footnote: 'Toute référence nommée est citée avec l’accord de l’organisation concernée.',
+  },
+  testimonials: {
+    eyebrow: 'Témoignages',
+    title: 'Ce qu’en disent les équipes qui s’en servent.',
+    lede: 'Paroles recueillies auprès des responsables de veille et de communication qui utilisent la plateforme au quotidien.',
+  },
   pilot: {
     eyebrow: 'Prochaine étape',
     title: 'Lancez votre pilote, mesurez la valeur.',

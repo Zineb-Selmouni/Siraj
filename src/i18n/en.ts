@@ -451,6 +451,18 @@ export const en: Copy = {
     footnote: 'Figures published by Harmony on harmony.ma.',
   },
 
+  references: {
+    eyebrow: 'References',
+    title: 'Organisations that trust us.',
+    lede: 'Public and private organisations using Harmony solutions.',
+    footnote:
+      'Every named reference is quoted with the agreement of the organisation concerned.',
+  },
+  testimonials: {
+    eyebrow: 'Testimonials',
+    title: 'What the teams using it say.',
+    lede: 'Gathered from the monitoring and communications leads who use the platform day to day.',
+  },
   pilot: {
     eyebrow: 'Next step',
     title: 'Launch your pilot, measure the value.',

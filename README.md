@@ -452,14 +452,42 @@ gestes différents pour une même marque.
 
 ### Non corrigé, et pourquoi
 
-> ⚠ **Aucune preuve sociale.** C'est exact, et cela ne peut pas se corriger en
-> écrivant du code : il faudrait des logos clients, un témoignage ou une
-> référence nommée, c'est-à-dire des faits. En inventer serait un faux. Les
-> notes d'intervention du deck précisent par ailleurs que toute référence
-> nommée est **soumise à l'accord du client**. Trois voies, par ordre de force :
-> une référence nommée avec accord écrit ; un cas anonymisé mais chiffré
-> (« une institution publique marocaine, pilote de six mois, N sources ») ; ou,
-> à défaut, retirer les affirmations qui promettent ce qui n'est pas montré.
+> ⚠ **Aucune preuve sociale.** C'est exact, et cela ne se corrige pas en
+> écrivant du code : il faut des logos clients, un témoignage ou une référence
+> nommée, c'est-à-dire des faits. En inventer serait un faux. Les notes
+> d'intervention du deck précisent par ailleurs que toute référence nommée est
+> **soumise à l'accord du client**.
+>
+> Les deux sections existent maintenant, **vides** : 11 Références et
+> 12 Témoignages. Elles attendent `CLIENT_LOGOS` et `TESTIMONIALS` dans
+> `src/proof.ts`.
+
+### Les sections de preuve sociale
+
+`src/proof.ts` tient les deux tableaux, vides, et un interrupteur :
+
+| État           | Production                  | Développement                      |
+| -------------- | --------------------------- | ---------------------------------- |
+| Tableau vide   | **La section n'existe pas** | Gabarit visible, hachuré et marqué |
+| Tableau rempli | La section s'affiche        | La section s'affiche               |
+
+Il n'y a donc **aucun chemin** par lequel un gabarit atteigne le public. Le
+gabarit est placé derrière `SHOW_PLACEHOLDERS` seul, et non derrière une
+condition mixte : la constante étant statiquement fausse en production, le
+compilateur supprime la branche entière. Vérifié sur le bundle publié — aucune
+des chaînes du gabarit n'y subsiste.
+
+`VITE_SHOW_PLACEHOLDERS=1` force l'affichage, pour faire relire une
+préversion. **Ne jamais poser cette variable sur l'environnement Netlify de
+production.**
+
+> Le gabarit des témoignages montre les CHAMPS à recueillir — citation, nom,
+> fonction, organisation — et rien d'autre. Pas de fausse citation, même en
+> maquette : elle serait attribuée à une personne nommée.
+
+> Les logos clients vont dans `public/logos/`. La bande les ramène à une seule
+> couleur et à une hauteur optique commune, et leur rend leurs couleurs au
+> survol : sans cela, un logo rouge vif écrase ses voisins.
 
 > ⚠ **Écart entre le site et le produit.** Le retour ouvre là-dessus et c'est
 > le point le plus lourd : la page annonce « pilote terrain réalisé » et
