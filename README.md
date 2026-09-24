@@ -350,10 +350,24 @@ lanterne-dessin). Vérifié : la composition est symétrique au pixel près.
 > mots arabes sont longs, et la plus longue ligne anglaise (« media
 > monitoring ») s'arrête à 561 px pour un plafond de 720. La colonne est donc
 > ~160 px plus large en arabe, de quoi mordre le dessin de 62 à 68 px à toutes
-> les tailles. Le film recule à 75 % et se resserre à 50cqw — plafond calculé
-> pour qu'à 1280 px, la fenêtre la plus serrée du mode côte à côte, la vague ne
-> sorte pas par la gauche. Le dessin est ~12 % plus petit qu'en latin : c'est
-> ce que coûte un titre plus large, et cela vaut mieux que de le rogner.
+> les tailles.
+>
+> Le film est donc **ancré par le bord du dessin**, pas par la lanterne :
+> `right: calc(var(--title-ch) * 1ch + var(--film-gap))`, avec un décalage de
+> 30,52 % — la distance du bord droit du dessin au bord droit de l'image — qui
+> annule la taille du film. L'écart au texte reste de 45 px quelle que soit
+> cette taille, et le dessin grandit vers la gauche. `font-size` reprend celle
+> du titre pour que `ch` s'y mesure dans la même police à la même taille :
+> l'écart suit le titre même si les métriques de Plex Sans Arabic ne sont pas
+> celles qu'on suppose.
+>
+> Le plafond de taille se mesure sur la **fenêtre**, pas sur la scène. La scène
+> s'arrête à la colonne de texte ; la section, elle, va d'un bord à l'autre, et
+> tout l'espace à gauche de la colonne était inutilisable sous l'ancienne
+> mesure — le dessin rapetissait pour rien. Vérifié de 1241 à 2560 px : le
+> dessin arabe fait 380 à 552 px contre 380 à 494 px en latin, donc égal ou
+> plus grand dès 1376 px, avec le bord gauche toujours à l'écran (11 px au plus
+> serré).
 
 > **Le balayage change de moment.** Le faisceau part à 180° — plein gauche — et
 > remonte vers 344°. En LTR le texte est à gauche du phare : il est balayé tout
