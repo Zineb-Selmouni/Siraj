@@ -490,12 +490,18 @@
        plus. (Règle perdue lors d'une réécriture du bloc, rétablie ici.) */
     --title-ch: 18;
     --lantern-x: 50%;
-    /* UNE SEULE formule sur toute la plage empilée, plafonnée : le
-       dessin fait 77 % de la largeur d'écran jusqu'à 653 px, puis se
-       fige. Deux paliers (132vw au-dessus de 620, 176vw en dessous)
+    /* UNE SEULE formule sur toute la plage empilée — deux paliers
        faisaient sauter le dessin de 475 à 357 px au passage du seuil,
-       en plein redimensionnement. */
-    --film-w: min(176vw, 1150px);
+       en plein redimensionnement.
+
+       Le dessin fait 92 % de la largeur d'écran. Les deux plafonds le
+       retiennent ailleurs : 1330 px pour qu'il ne grossisse plus passé
+       630 px de large, et 168vh pour qu'un téléphone COUCHÉ n'en reçoive
+       pas un qui dépasse l'écran en hauteur — c'est la seule mesure qui
+       voie la différence entre 812 × 375 et 375 × 812. 168vh vient de la
+       contrainte réelle : le dessin fait 0,4172 de la largeur du film,
+       et on lui accorde au plus 70 % de la hauteur d'écran. */
+    --film-w: min(211vw, 1330px, 168vh);
 
     min-height: auto;
     padding-block: clamp(32px, 6vw, 56px) 0;
@@ -514,7 +520,12 @@
        0,7417 / 1,7778 = 0,4172 de la largeur. Changer --film-w ajuste donc
        la réserve toute seule — les deux ne peuvent pas se désaccorder. */
     height: calc(var(--film-w) * 0.4172);
-    margin-top: clamp(20px, 5vw, 36px);
+    /* Les deux écarts sont posés ICI, et non un de chaque côté : le
+       dessin touchait presque les boutons au-dessus (20 px) pendant que
+       la bande du bas gardait ses 36 px. Les marges ne fusionnent pas
+       entre éléments flex, donc celle de la bande est remise à zéro
+       juste en dessous, sans quoi l'écart du bas vaudrait le double. */
+    margin-block: clamp(36px, 9vw, 64px);
   }
 
   .hero__grid {
@@ -523,6 +534,15 @@
 
   .specs {
     order: 2;
+    margin-top: 0;
+  }
+
+  /* La nappe suit le phare. Son centre était calculé pour la
+     composition côte à côte : en pile, le film repasse au milieu et
+     descend sous le texte, la lumière doit y descendre aussi. */
+  .hero__glow {
+    --glow-x: 50%;
+    --glow-y: 58%;
   }
 
   /* Le dessin n'est pas centré dans son image — il occupe 25,9→69,5 %
@@ -684,6 +704,13 @@
     right: auto;
     left: 50%;
     transform: translate(-47.7%, -53%);
+  }
+
+  /* Même spécificité que la règle RTL plein écran, sans quoi celle-ci
+     l'emporterait ici aussi — une requête de média n'ajoute rien au
+     poids d'un sélecteur. */
+  [dir='rtl'] .hero__glow {
+    --glow-x: 50%;
   }
 }
 

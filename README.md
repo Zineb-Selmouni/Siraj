@@ -383,10 +383,23 @@ posait le film sur le texte suivant. La hauteur réservée est dérivée de
 `--film-w` (`× 0,4172`, soit les 74,17 % du dessin rapportés au format 16:9),
 donc les deux ne peuvent pas se désaccorder.
 
-Une seule formule couvre toute la plage empilée, plafonnée : le dessin fait
-76,6 % de la largeur d'écran jusqu'à 653 px, puis se fige à 501 px. Deux
-paliers le faisaient sauter de 475 à 357 px au passage du seuil, en plein
-redimensionnement.
+Une seule formule couvre toute la plage empilée — deux paliers faisaient
+sauter le dessin de 475 à 357 px au passage du seuil, en plein
+redimensionnement. Le dessin fait **92 % de la largeur d'écran**, et deux
+plafonds le retiennent ailleurs : 1330 px passé 630 px de large, et 168vh pour
+qu'un téléphone COUCHÉ n'en reçoive pas un plus haut que l'écran. Ce dernier
+vient de la contrainte réelle — le dessin fait 0,4172 de la largeur du film, et
+on lui accorde au plus 70 % de la hauteur d'écran.
+
+> En paysage, le dessin rétrécit d'environ 45 %. Ce n'est pas une perte : sans
+> ce plafond il mesurait 481 px de haut sur un écran de 375, soit **128 % de la
+> hauteur visible** — le logo seul dépassait l'écran.
+
+Les deux écarts, au-dessus et en dessous, sont posés sur la scène
+(`margin-block`, 36 à 64 px) et non un de chaque côté : le dessin touchait
+presque les boutons au-dessus (20 px) pendant que la bande du bas gardait ses
+36 px. Les marges ne fusionnent pas entre éléments flex, celle de la bande est
+donc remise à zéro — sans quoi l'écart du bas vaudrait le double.
 
 > ⚠ **L'encre du film a été adaptée au fond sombre.** Le film ayant été composé
 > pour finir sur du papier, son mot-symbole est un charbon qui tombe à 1,13:1
