@@ -600,6 +600,25 @@
    Le passage de lumière suit, et descend au lieu de monter.
    ═══════════════════════════════════════════════════════════════ */
 
+/* ─── L'arabe demande plus de place ──────────────────────────────
+   Le titre garde `max-width: 15ch`, mais en arabe il atteint ce
+   plafond, alors qu'en anglais il ne l'atteint jamais : les mots
+   arabes sont longs, et la plus longue ligne anglaise (« media
+   monitoring ») s'arrête à 561 px pour un plafond de 720. La colonne
+   de texte est donc ~160 px plus large en arabe — de quoi manger
+   l'écart et mordre le dessin de 62 à 68 px, à toutes les tailles.
+
+   Le film recule donc vers la gauche et se resserre. Le plafond de
+   largeur est calculé pour que le dessin ne SORTE PAS par la gauche à
+   1280 px, la fenêtre la plus serrée du mode côte à côte : au-delà de
+   50cqw, son bord passait sous le bord de l'écran et la vague s'y
+   trouvait coupée. Le dessin est ~12 % plus petit qu'en latin ; c'est
+   ce que coûte un titre plus large, et c'est mieux que de le rogner. */
+[dir='rtl'] .hero {
+  --lantern-x: 75%;
+  --film-cap: 50cqw;
+}
+
 [dir='rtl'] .hero__film {
   left: auto;
   right: var(--lantern-x);

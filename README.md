@@ -345,6 +345,16 @@ dessin en miroir. Le film est donc ancré par sa droite et décalé de 41,56 % d
 sa largeur, soit 30,52 % (bord droit du dessin) + 11,04 % (écart
 lanterne-dessin). Vérifié : la composition est symétrique au pixel près.
 
+> **L'arabe demande plus de place.** Le titre garde `max-width: 15ch`, mais en
+> arabe il ATTEINT ce plafond, alors qu'en anglais il ne l'atteint jamais : les
+> mots arabes sont longs, et la plus longue ligne anglaise (« media
+> monitoring ») s'arrête à 561 px pour un plafond de 720. La colonne est donc
+> ~160 px plus large en arabe, de quoi mordre le dessin de 62 à 68 px à toutes
+> les tailles. Le film recule à 75 % et se resserre à 50cqw — plafond calculé
+> pour qu'à 1280 px, la fenêtre la plus serrée du mode côte à côte, la vague ne
+> sorte pas par la gauche. Le dessin est ~12 % plus petit qu'en latin : c'est
+> ce que coûte un titre plus large, et cela vaut mieux que de le rogner.
+
 > **Le balayage change de moment.** Le faisceau part à 180° — plein gauche — et
 > remonte vers 344°. En LTR le texte est à gauche du phare : il est balayé tout
 > au début, à 2,35 s. En RTL il est à droite, et le faisceau ne l'atteint qu'en
