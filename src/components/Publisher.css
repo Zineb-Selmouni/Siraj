@@ -155,3 +155,17 @@
     font-size: 0.75rem;
   }
 }
+
+/* ─── La plaque de l'éditeur ──────────────────────────────────────
+   La section est sur papier ; le logo Harmony est fait pour le sombre.
+   Plutôt que de le recolorer — ce n'est pas notre marque — on lui donne
+   le fond qu'il lui faut.
+   ───────────────────────────────────────────────────────────────── */
+
+.pub__plate {
+  display: inline-flex;
+  margin-top: clamp(26px, 3vw, 38px);
+  padding: clamp(14px, 1.5vw, 20px) clamp(20px, 2.2vw, 30px);
+  background: var(--ink-900);
+  font-size: clamp(1.5rem, 1.1rem + 1.2vw, 2rem);
+}

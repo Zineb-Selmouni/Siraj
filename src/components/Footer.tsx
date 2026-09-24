@@ -1,6 +1,7 @@
 import { useCopy } from '../i18n'
 import { CONTACT_EMAIL, WEBSITE, WEBSITE_URL } from '../config'
 import { SirajLogo } from './logo/SirajLogo'
+import { HarmonyLogo } from './logo/HarmonyLogo'
 import './Footer.css'
 
 export function Footer() {
@@ -18,6 +19,12 @@ export function Footer() {
                 refonte du hero. Sa place est ici, sous le signe. */}
             <p className="foot__tagline mono">{copy.hero.tagline}</p>
             <p className="foot__catalog mono">{copy.footer.catalog}</p>
+
+            {/* Le fond est déjà sombre : le logo y va dans ses couleurs. */}
+            <p className="foot__by">
+              <span className="mono">{copy.footer.publishedBy}</span>
+              <HarmonyLogo className="foot__harmony" title="Harmony" />
+            </p>
           </div>
 
           <dl className="foot__details">

@@ -118,3 +118,23 @@
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+/* ─── L'éditeur ───────────────────────────────────────────────── */
+
+.foot__by {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+
+.foot__by .mono {
+  color: var(--on-dark-mute);
+  letter-spacing: 0.14em;
+  font-size: 0.6875rem;
+}
+
+.foot__harmony {
+  font-size: 1.375rem;
+}

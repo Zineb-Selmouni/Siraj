@@ -509,6 +509,7 @@ export const fr = {
   footer: {
     company: 'Harmony Technology',
     baseline: 'Where Technology Meets Humanity',
+    publishedBy: 'Édité par',
     catalog: 'Réf. produit P03 — Veille médiatique & intelligence stratégique',
     contactTitle: 'Contact',
     officeTitle: 'Siège',

@@ -15,7 +15,13 @@ export default tseslint.config(
   // Fichiers générés : tokens.css par build-tokens, marks.ts par
   // build-logo. Ni l'un ni l'autre n'est écrit à la main.
   {
-    ignores: ['dist', 'node_modules', 'src/styles/tokens.css', 'src/components/logo/marks.ts'],
+    ignores: [
+      'dist',
+      'node_modules',
+      'src/styles/tokens.css',
+      'src/components/logo/marks.ts',
+      'src/components/logo/harmony.ts',
+    ],
   },
 
   {

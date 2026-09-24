@@ -1,6 +1,7 @@
 import type { CSSProperties } from 'react'
 import { useCopy } from '../i18n'
 import { SectionHead } from './SectionHead'
+import { HarmonyLogo } from './logo/HarmonyLogo'
 import './Publisher.css'
 
 /**
@@ -27,6 +28,14 @@ export function Publisher() {
     <section className="band publisher" id="editeur">
       <div className="shell">
         <SectionHead n="10" label={p.eyebrow} title={p.title} lede={p.lede} split />
+
+        {/* Sur plaque sombre : l'or de la marque tombe à 1,38:1 sur le
+            papier de la section, contre 11,98:1 ici. On pose le logo sur
+            un fond qui lui va plutôt que de le recolorer — ce n'est pas
+            notre marque. */}
+        <p className="pub__plate" data-reveal>
+          <HarmonyLogo title="Harmony" />
+        </p>
 
         <dl className="pub__figures">
           {p.figures.map((f, i) => (

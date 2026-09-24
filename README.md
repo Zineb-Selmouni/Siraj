@@ -413,6 +413,27 @@ donc remise à zéro — sans quoi l'écart du bas vaudrait le double.
 > **7,7:1** sur le fond éclairé. À 0,42 on tombait à 5,2:1 pour un gain visuel
 > nul.
 
+### Le logo de l'éditeur
+
+`harmony/` (hors dépôt) fournit l'icône et le mot-symbole, tracé et non
+composé. `build-logo.mjs` en tire `src/components/logo/harmony.ts`, versionné.
+
+Deux retouches, et deux seulement. L'id du masque (`clip0_16960_200`) est
+préfixé — un id aussi générique entre en collision au premier autre export
+Figma posé sur la même page. Et les tracés du mot passent de `white` à
+`currentColor` : le rendu sur fond sombre est identique, mais la page peut le
+poser ailleurs sans toucher au fichier. **L'or de l'icône n'est pas touché** —
+c'est la couleur de la marque.
+
+> Le logo est fait pour le fond SOMBRE : son or tombe à **1,38:1 sur le papier**
+> de la page, contre 11,98:1 sur le bleu-nuit. La section 10 étant claire, le
+> lockup y est posé sur une plaque sombre plutôt que recoloré. Le pied de page,
+> déjà sombre, le reçoit tel quel.
+
+> `direction: ltr` est forcé sur le lockup : un conteneur flex hérite du sens
+> de lecture, et l'arabe aurait posé l'icône à droite du mot — une autre
+> composition que celle qui a été livrée.
+
 **Le signe, lui, ne bouge pas.** `SirajLogo` (en-tête, pied de page) est fixe.
 Une seconde animation écrite à la main en serait une variante non livrée : deux
 gestes différents pour une même marque.

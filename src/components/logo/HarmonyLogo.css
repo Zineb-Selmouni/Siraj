@@ -1,0 +1,36 @@
+/* ═══════════════════════════════════════════════════════════════
+   Le logo de l'éditeur
+
+   L'icône et le mot sont deux fichiers, donc deux SVG : ils sont
+   alignés ici, et non dans un lockup figé. Leur rapport de hauteur
+   vient de la livraison — icône 40 unités, mot 16 — et le mot est posé
+   à 40 % de la hauteur de l'icône, ce qui reproduit l'équilibre du
+   fichier sans le verrouiller.
+
+   L'or de l'icône n'est pas touché. Le mot hérite de `currentColor` :
+   sur fond sombre il est blanc, comme dans la livraison.
+   ═══════════════════════════════════════════════════════════════ */
+
+.hm {
+  display: inline-flex;
+  align-items: center;
+  /* Un logo ne se réordonne pas. En RTL, un conteneur flex hérite du
+     sens de lecture et poserait l'icône à droite du mot : ce serait une
+     autre composition que celle qui a été livrée. */
+  direction: ltr;
+  gap: 0.58em;
+  line-height: 1;
+  color: #fff;
+}
+
+.hm__icon {
+  height: 1em;
+  width: auto;
+  flex: 0 0 auto;
+}
+
+.hm__word {
+  height: 0.4em;
+  width: auto;
+  flex: 0 0 auto;
+}

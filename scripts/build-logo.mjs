@@ -34,6 +34,8 @@ const root = join(dirname(fileURLToPath(import.meta.url)), '..')
 const srcDir = join(root, 'Siraj logo refinement', 'SVG')
 const outFile = join(root, 'src', 'components', 'logo', 'marks.ts')
 const animFile = join(root, 'Siraj logo refinement', 'Animation', 'SIRAJ_animation.html')
+const hmDir = join(root, 'harmony')
+const hmOut = join(root, 'src', 'components', 'logo', 'harmony.ts')
 const fontDir = join(root, 'public', 'fonts')
 
 /**
@@ -198,3 +200,74 @@ for (const p of parts) {
 
 console.log('  ✔ Jost extraite du film')
 extractFonts()
+
+/**
+ * Le logo de l'éditeur.
+ *
+ * Deux fichiers : l'icône (or de charte #FFC933) et le mot-symbole, tracé
+ * et non composé. Même règle que pour Siraj — la livraison reste hors
+ * dépôt, le fichier généré est versionné.
+ *
+ * Deux retouches, et deux seulement :
+ *
+ * 1. L'id du masque (`clip0_16960_200`) est préfixé. Un id générique de
+ *    ce genre entre en collision au premier autre export Figma posé sur
+ *    la même page.
+ *
+ * 2. Les tracés du mot-symbole passent de `white` à `currentColor`. Le
+ *    rendu sur fond sombre est IDENTIQUE — la couleur y est héritée en
+ *    blanc — mais la page peut alors le poser ailleurs sans toucher au
+ *    fichier. L'or de l'icône, lui, n'est pas touché : c'est la couleur
+ *    de la marque.
+ */
+function harmony() {
+  if (!existsSync(hmDir)) {
+    console.log('  · Logo éditeur absent — harmony.ts existant conservé.')
+    return
+  }
+  const read = (name) => {
+    const file = join(hmDir, name)
+    if (!existsSync(file)) {
+      console.error(`  ✖ Manquant : ${file}`)
+      process.exit(1)
+    }
+    let svg = readFileSync(file, 'utf8').replace(/<\?xml[^>]*\?>/g, '')
+    for (const id of [...svg.matchAll(/\sid="([^"]+)"/g)].map((m) => m[1])) {
+      svg = svg.split(` id="${id}"`).join(` id="hm-${id}"`)
+      svg = svg.split(`url(#${id})`).join(`url(#hm-${id})`)
+    }
+    const viewBox = /viewBox="([^"]+)"/.exec(svg)[1]
+    const inner = svg
+      .replace(/^[\s\S]*?<svg[^>]*>/, '')
+      .replace(/<\/svg>\s*$/, '')
+      .trim()
+    return { viewBox, inner }
+  }
+
+  const icon = read('logo_harmony.svg')
+  const word = read('harmony-text.svg')
+  word.inner = word.inner.split('fill="white"').join('fill="currentColor"')
+
+  const out = `/* Généré par scripts/build-logo.mjs — NE PAS ÉDITER À LA MAIN. */
+/* Source : « harmony/ » (livraison de design, hors dépôt) */
+
+type Mark = { viewBox: string; inner: string }
+
+export const HARMONY: Record<'icon' | 'wordmark', Mark> = {
+  icon: {
+    viewBox: ${JSON.stringify(icon.viewBox)},
+    inner: ${JSON.stringify(icon.inner)},
+  },
+  wordmark: {
+    viewBox: ${JSON.stringify(word.viewBox)},
+    inner: ${JSON.stringify(word.inner)},
+  },
+}
+`
+  writeFileSync(hmOut, out, 'utf8')
+  console.log('  ✔ harmony.ts généré')
+  console.log(`      icône    ${icon.viewBox}`)
+  console.log(`      mot      ${word.viewBox}`)
+}
+
+harmony()

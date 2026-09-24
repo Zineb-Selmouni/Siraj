@@ -494,6 +494,7 @@ export const en: Copy = {
   footer: {
     company: 'Harmony Technology',
     baseline: 'Where Technology Meets Humanity',
+    publishedBy: 'Published by',
     catalog: 'Product ref. P03 — Media monitoring & strategic intelligence',
     contactTitle: 'Contact',
     officeTitle: 'Head office',

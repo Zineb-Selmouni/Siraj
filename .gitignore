@@ -21,6 +21,10 @@ Context/
 Siraj logo refinement/
 _motion.js
 
+# Logo de l'éditeur, même règle : src/components/logo/harmony.ts est
+# versionné à sa place.
+harmony/
+
 # Arbitrages de contenu : cite des notes d'intervention internes du deck
 # (dont la mise en garde sur le LLM externe). Hors dépôt.
 NOTES-INTERNES.md
