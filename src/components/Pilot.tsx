@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import type { CSSProperties, FormEvent } from 'react'
 import { useLanguage } from '../i18n'
-import { CONTACT_EMAIL } from '../config'
+import { CNDP_DECLARATION, CONTACT_EMAIL } from '../config'
 import { submitPilotRequest } from '../lib/pilotRequest'
 import { SectionHead } from './SectionHead'
 import './Pilot.css'
@@ -219,6 +219,20 @@ export function Pilot() {
                 >
                   {status === 'sending' ? form.submitting : form.submit}
                 </button>
+
+                {/* Mentions loi 09-08. La case de consentement l'invoque :
+                    la page doit donc dire qui traite, pourquoi, combien de
+                    temps, et comment s'y opposer. */}
+                <div className="pilot__legal">
+                  <h3 className="pilot__legal-title mono">{form.privacyTitle}</h3>
+                  <p>{form.privacy}</p>
+                  {CNDP_DECLARATION && (
+                    <p className="pilot__cndp">
+                      {form.privacyCndp}
+                      <strong className="num">{CNDP_DECLARATION}</strong>
+                    </p>
+                  )}
+                </div>
 
                 <p className="pilot__status" role="status" aria-live="polite">
                   {status === 'failed' && (

@@ -197,7 +197,23 @@
   background: rgb(10 20 37 / 0.97);
   backdrop-filter: blur(16px);
   border-bottom: var(--rule) solid var(--ink-line);
-  overflow: hidden;
+
+  /* La barre est COLLANTE, donc le panneau l'est aussi : tout ce qui
+     dépasse la fenêtre reste hors d'atteinte, on ne peut pas faire
+     défiler jusqu'au bouton. C'est ce qui coupait « Demander un
+     pilote », dernier élément de la liste — sur écran bas (téléphone
+     couché, fenêtre réduite), les quatre liens et le bouton font
+     ~315 px, la barre 74, et il ne reste plus rien.
+
+     `dvh` et non `vh` : sur mobile, `vh` compte la barre d'adresse
+     comme si elle était toujours repliée, et surestime donc la hauteur
+     disponible — exactement l'erreur qui fait sortir le dernier
+     élément de l'écran. La ligne en `vh` est le repli. */
+  max-height: calc(100vh - 74px);
+  max-height: calc(100dvh - 74px - env(safe-area-inset-top, 0px));
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .sheet.is-open {
@@ -218,7 +234,9 @@
 .sheet__inner {
   display: flex;
   flex-direction: column;
-  padding-block: 8px 24px;
+  /* Marge basse augmentée du creux des téléphones à encoche : sans
+     elle, le bouton passe sous la barre de gestes. */
+  padding-block: 8px calc(24px + env(safe-area-inset-bottom, 0px));
 }
 
 .sheet__inner a:not(.sheet__cta) {

@@ -417,6 +417,39 @@ donc remise à zéro — sans quoi l'écart du bas vaudrait le double.
 Une seconde animation écrite à la main en serait une variante non livrée : deux
 gestes différents pour une même marque.
 
+## Retours de relecture — ce qui est fait, ce qui ne l'est pas
+
+### Corrigé
+
+|                                           |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| « Le logo coupe sur J »                   | Le bord droit du dessin tombait à **1 px** de la colonne de texte. Derrière : le titre plafonne à 15ch (~720 px) et le dessin en demandait ~515 — la colonne n'en fait que 1168. L'anglais n'y échappait que parce que sa plus longue ligne s'arrête à 561 px ; une langue qui remplit sa boîte serait passée dessous. Le film s'ancre désormais sur le BORD DU DESSIN, à distance fixe du titre (en `ch`, mesuré dans la police du titre), et se plafonne sur la fenêtre. ≥ 40 px du bord d'écran partout, et plus grand à 1920 qu'avant. |
+| « Demander un pilote coupe dans le menu » | La barre est `position: sticky` : le panneau l'est donc aussi, et tout ce qui dépassait la fenêtre restait **hors d'atteinte** — impossible de faire défiler jusqu'au bouton. Hauteur bornée en `dvh` (et non `vh`, qui ignore la barre d'adresse repliable) + défilement interne + marge basse pour les encoches.                                                                                                                                                                                                                         |
+| Siège annoncé à Casablanca                | **harmony.ma indique Rabat** — Villa n° 14, rue Annassime, Hay Riad. Corrigé dans le repère du hero et le pied de page, dans les trois langues.                                                                                                                                                                                                                                                                                                                                                                                            |
+| Pas de bloc « à propos »                  | Section 10, **L'éditeur**, juste avant la demande de pilote : pour un achat public, savoir à qui l'on s'adresse précède la décision de s'adresser à lui. Chiffres et adresses repris de harmony.ma et **attribués** comme tels. Lien ajouté dans la navigation.                                                                                                                                                                                                                                                                            |
+| Déclaration CNDP                          | Les mentions loi 09-08 manquaient sous le formulaire : responsable, finalité, conservation, droits. Ajoutées. Le numéro de déclaration est dans `config.ts` et **ne s'affiche que s'il existe** — on ne publie pas un numéro qu'on n'a pas.                                                                                                                                                                                                                                                                                                |
+
+### Non corrigé, et pourquoi
+
+> ⚠ **Aucune preuve sociale.** C'est exact, et cela ne peut pas se corriger en
+> écrivant du code : il faudrait des logos clients, un témoignage ou une
+> référence nommée, c'est-à-dire des faits. En inventer serait un faux. Les
+> notes d'intervention du deck précisent par ailleurs que toute référence
+> nommée est **soumise à l'accord du client**. Trois voies, par ordre de force :
+> une référence nommée avec accord écrit ; un cas anonymisé mais chiffré
+> (« une institution publique marocaine, pilote de six mois, N sources ») ; ou,
+> à défaut, retirer les affirmations qui promettent ce qui n'est pas montré.
+
+> ⚠ **Écart entre le site et le produit.** Le retour ouvre là-dessus et c'est
+> le point le plus lourd : la page annonce « pilote terrain réalisé » et
+> « usage réel sur des sujets de veille clients ». Tant que le produit ne les
+> soutient pas, ces phrases sont un risque commercial — et, devant un acheteur
+> public, un risque tout court. Le correctif n'est pas technique : soit le
+> produit rattrape la page, soit la page redescend au niveau du produit. La
+> seconde option se fait en une heure, sur les sections 05 et 06.
+
+---
+
 ---
 
 ## Déploiement — Netlify

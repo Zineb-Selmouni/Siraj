@@ -1,0 +1,157 @@
+/* ═══════════════════════════════════════════════════════════════
+   L'éditeur
+
+   Même grammaire que la section des chiffres (05) : une barre forte
+   coiffe la grille, des filets d'un pixel séparent les cellules. Les
+   deux sections comptent des choses, elles se ressemblent exprès.
+   ═══════════════════════════════════════════════════════════════ */
+
+.pub__figures {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin: clamp(40px, 5vw, 72px) 0 0;
+  border-top: 2px solid var(--ink);
+}
+
+.pub__figures > div {
+  padding: clamp(20px, 2.4vw, 30px) clamp(16px, 2vw, 26px) clamp(20px, 2.4vw, 30px) 0;
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+  min-width: 0;
+}
+
+.pub__figures > div + div {
+  padding-inline-start: clamp(16px, 2vw, 26px);
+  border-inline-start: 1px solid var(--line);
+}
+
+.pub__figures > div:last-child {
+  padding-inline-end: 0;
+}
+
+.pub__value {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 1.3rem + 2.6vw, 3.25rem);
+  font-weight: 600;
+  line-height: 0.98;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.pub__figures dd {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+
+.pub__figures strong {
+  font-family: var(--font-display);
+  font-size: 0.9375rem;
+  color: var(--ink);
+}
+
+.pub__figures span {
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--mute);
+}
+
+/* ─── Les domaines et les adresses ────────────────────────────── */
+
+.pub__split {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  gap: clamp(28px, 4vw, 64px);
+  margin-top: clamp(40px, 4.5vw, 68px);
+}
+
+.pub__label {
+  color: var(--brass);
+  letter-spacing: 0.14em;
+  font-size: 0.6875rem;
+  margin-bottom: 14px;
+}
+
+.pub__label--2 {
+  margin-top: 26px;
+}
+
+.pub__pillars {
+  display: flex;
+  flex-direction: column;
+}
+
+.pub__pillars li {
+  padding: 13px 0;
+  border-top: 1px solid var(--line);
+  font-size: var(--t-small);
+  line-height: 1.5;
+  color: var(--body);
+}
+
+.pub__pillars li:last-child {
+  border-bottom: 1px solid var(--line);
+}
+
+.pub__addr {
+  font-size: var(--t-small);
+  line-height: 1.6;
+  color: var(--body);
+  max-width: 34ch;
+}
+
+.pub__note {
+  margin-top: clamp(28px, 3vw, 40px);
+  font-size: 0.8125rem;
+  color: var(--mute);
+}
+
+/* ─── Tablette : les chiffres en 2 × 2 ────────────────────────── */
+
+@media (max-width: 900px) {
+  .pub__figures {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .pub__figures > div:nth-child(odd) {
+    padding-inline-start: 0;
+    border-inline-start: 0;
+  }
+
+  .pub__figures > div:nth-child(even) {
+    padding-inline-end: 0;
+  }
+
+  .pub__figures > div:nth-child(n + 3) {
+    border-top: 1px solid var(--line);
+  }
+
+  .pub__split {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* ─── Téléphone ───────────────────────────────────────────────── */
+
+@media (max-width: 560px) {
+  .pub__figures > div {
+    padding-block: 18px;
+    gap: 8px;
+  }
+
+  .pub__value {
+    font-size: clamp(1.75rem, 6.5vw, 2.25rem);
+  }
+
+  .pub__figures strong {
+    font-size: 0.875rem;
+  }
+
+  .pub__figures span {
+    font-size: 0.75rem;
+  }
+}

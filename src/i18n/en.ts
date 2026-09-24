@@ -18,6 +18,7 @@ export const en: Copy = {
     darija: 'Darija',
     figures: 'Figures',
     offers: 'Pricing',
+    publisher: 'Publisher',
     cta: 'Request a pilot',
     descriptor: 'Media intelligence',
     switchTo: 'Passer en français',
@@ -37,7 +38,7 @@ export const en: Copy = {
     ctaSecondary: 'Explore the platform',
     markAlt: 'The Siraj 360 lighthouse, beams lit over the wave',
     /* Bandeau de tête : la maison mère et le lieu, avant même le titre. */
-    place: 'Casablanca · Morocco',
+    place: 'Rabat · Morocco',
     /* Sens du nom, relevé dans la charte (brand.arabicName). */
     nameMeaning: 'The lamp, the beacon',
   },
@@ -426,6 +427,30 @@ export const en: Copy = {
     footnote: 'Pricing in MAD · R&D co-funding possible · free pilot on request.',
   },
 
+  publisher: {
+    eyebrow: 'The publisher',
+    title: 'Siraj 360 is published by Harmony.',
+    lede: 'Siraj 360 is not a standalone product: it comes from a firm that has been building information systems for the public sector and industry for over ten years.',
+    figures: [
+      { value: '+11', label: 'years of expertise', note: 'AI, IoT and smart city' },
+      { value: '+110', label: 'experts', note: 'Multidisciplinary team' },
+      { value: '+150', label: 'clients', note: 'Africa and the MENA region' },
+      { value: '+250', label: 'digital projects', note: '15 patents and innovations' },
+    ],
+    pillarsTitle: 'Four domains',
+    pillars: [
+      'Document intelligence and digital knowledge',
+      'AI, data analysis and development',
+      'Smart industry X.0 — IoT and robotics',
+      'Smart cities and territorial intelligence',
+    ],
+    addressTitle: 'Head office',
+    address: 'Villa no. 14, rue Annassime, block M, sector 9, Hay Riad — 10100 Rabat',
+    labTitle: 'Innovation centre',
+    lab: 'Villa no. 9, rue Al Kassous, sector 11, Hay Riad — 10100 Rabat',
+    footnote: 'Figures published by Harmony on harmony.ma.',
+  },
+
   pilot: {
     eyebrow: 'Next step',
     title: 'Launch your pilot, measure the value.',
@@ -459,6 +484,10 @@ export const en: Copy = {
       required: 'This field is required.',
       invalidEmail: 'Enter a valid e-mail address.',
       consentRequired: 'Your agreement is needed to process the request.',
+      privacyTitle: 'Personal data',
+      privacy:
+        'The information collected is processed by Harmony, Hay Riad — 10100 Rabat, solely to handle your pilot request. It is neither passed to third parties nor used for any other purpose, and is kept for the duration of the commercial exchange. Under Law 09-08 you have a right of access, rectification and objection, which you may exercise at the address above.',
+      privacyCndp: 'Processing declared to the CNDP under no. ',
     },
   },
 
@@ -468,7 +497,7 @@ export const en: Copy = {
     catalog: 'Product ref. P03 — Media monitoring & strategic intelligence',
     contactTitle: 'Contact',
     officeTitle: 'Head office',
-    office: 'Harmony Technology · Casablanca, Morocco',
+    office: 'Harmony · Hay Riad, 10100 Rabat, Morocco',
     siteTitle: 'Website',
     rights: 'All rights reserved.',
     legal: 'Legal notice',

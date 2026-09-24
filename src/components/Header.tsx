@@ -48,6 +48,7 @@ export function Header() {
     { href: '#darija', label: copy.nav.darija },
     { href: '#chiffres', label: copy.nav.figures },
     { href: '#offres', label: copy.nav.offers },
+    { href: '#editeur', label: copy.nav.publisher },
   ]
 
   return (

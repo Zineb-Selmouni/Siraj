@@ -6,6 +6,23 @@
  * emplacements, pas des coordonnées validées par la direction commerciale.
  */
 
+/**
+ * Numéro de déclaration CNDP.
+ *
+ * Le formulaire recueille des données à caractère personnel — nom,
+ * fonction, e-mail professionnel, téléphone, organisation, sujets de
+ * veille — et sa case de consentement invoque explicitement la loi
+ * 09-08. Le traitement doit donc être DÉCLARÉ à la CNDP avant mise en
+ * ligne ; invoquer la loi sans avoir déclaré est pire que de ne rien
+ * dire.
+ *
+ * Tant que la valeur est vide, la mention n'est pas affichée : on ne
+ * publie pas un numéro qu'on n'a pas. Le reste des mentions
+ * (responsable, finalité, conservation, droits) est affiché en
+ * permanence — il ne dépend d'aucune démarche.
+ */
+export const CNDP_DECLARATION = ''
+
 /** Adresse de repli quand l'envoi du formulaire échoue. */
 export const CONTACT_EMAIL = 'contact@harmony.ma'
 

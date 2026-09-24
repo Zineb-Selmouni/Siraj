@@ -43,8 +43,9 @@
      La lanterne est ÉPINGLÉE à un point du hero. Dans le film elle se
      trouve à (710, 238) sur 1920 × 1080, soit (36,98 %, 22,04 %) de
      l'image : la translation négative de ces deux valeurs amène ce
-     point exactement sur --lantern-x / --lantern-y, quelle que soit la
-     taille du film ou de la fenêtre.
+     point exactement sur --lantern-y, quelle que soit la taille du film
+     ou de la fenêtre. L'horizontale, elle, ne s'ancre plus sur la
+     lanterne mais sur le bord du dessin (voir .hero__film).
 
      Elle est haute (30 %) pour deux raisons qui vont ensemble : le
      dessin descend jusqu'à 90 % de l'image, il lui faut donc de la
@@ -57,7 +58,6 @@
      la même page ne tenait pas la même composition d'un écran à l'autre.
      Rapporté à la colonne, l'écart est constant. */
   --stage-w: calc(min(100%, 1280px) - var(--gutter) * 2);
-  --lantern-x: 67%;
   /* Le plafond du titre, partagé : en arabe le film s'y adosse pour
      garder un écart constant, quelles que soient les métriques de la
      police. Les deux ne peuvent donc pas se désaccorder. */
@@ -84,7 +84,7 @@
   /* La nappe couvre toute la section, la scène non : le centre se
      recalcule donc en coordonnées de SECTION.
      bord gauche de la scène + 67 % = 50 % - w/2 + 0,67 w = 50 % + 0,17 w */
-  --glow-x: calc(50% + 0.17 * var(--stage-w));
+  --glow-x: calc(50% + 0.28 * var(--stage-w));
   /* Le film est dimensionné PAR SA HAUTEUR, pas par la largeur de la
      fenêtre. Le dessin occupe 74 % de la hauteur de l'image, et la
      section est plafonnée à 880 px : à 1920 de large, un film calé sur
@@ -92,7 +92,6 @@
      le mot-symbole passait sous la section. Calé sur la hauteur, le
      cadrage tient à toutes les largeurs. */
   --film-h: 97cqh;
-  --film-cap: 57cqw;
 
   position: relative;
   overflow: hidden;
@@ -131,21 +130,50 @@
 
 .hero__film {
   position: absolute;
-  /* Le film se cale sur la plus contraignante des deux mesures de la
-     scène : sa hauteur, ou sa largeur. Calé sur la seule hauteur, il
-     débordait sur le texte dans une fenêtre large mais basse ; calé sur
-     la seule largeur, le mot-symbole passait sous la section dans une
-     fenêtre haute. `min()` prend celle qui serre.
+
+  /* ─── Ancré par le BORD DU DESSIN ─────────────────────────────
+     Le décalage de 25,94 % est la position du bord gauche du dessin
+     dans son image : il annule la taille du film, si bien que `left`
+     place le bord du DESSIN — et lui seul — à distance fixe du texte.
+
+     Cette distance s'adosse au plafond du titre, en `ch`, mesuré dans
+     LA POLICE ET LA TAILLE DU TITRE : d'où le `font-size` et le
+     `font-family` repris ici. Le film n'a pas de texte, ces deux
+     propriétés ne servent qu'à ça.
+
+     Le pourcentage de la scène qu'on employait avant ne voyait pas le
+     titre : il le supposait à 600 px, alors que 15ch en font ~720. Le
+     dessin affleurait donc la colonne à 1 px près — c'est le « J
+     coupé » — et, dans une langue dont le texte remplit sa boîte, il
+     serait passé DESSOUS. L'anglais n'y échappait que parce que sa
+     plus longue ligne s'arrête à 561 px. */
+  left: calc(var(--title-ch) * 1ch + var(--film-gap));
+  top: var(--lantern-y);
+  transform: translate(-25.94%, -22.04%);
+  font-size: var(--t-display);
+  font-family: var(--font-display);
+
+  /* ─── Taille ──────────────────────────────────────────────────
+     La plus contraignante de deux mesures. En hauteur : la scène.
+     En largeur : ce qui reste entre le texte et le bord de l'ÉCRAN —
+     et non de la colonne, car la section va d'un bord à l'autre et
+     tout l'espace au-delà de la colonne était inutilisable.
+
+       0,4354·largeur ≤ 50vw + colonne/2 − plafond titre − écart − marge
+
+     divisé par 1,7778 pour revenir à une hauteur : 0,774. La marge de
+     40 px est celle qui sépare le dessin du bord de l'écran.
 
      La première ligne est le repli des navigateurs sans requêtes de
-     conteneur : ils retrouvent l'ancien comportement, calé en hauteur. */
+     conteneur. */
+  --film-cap: calc(
+    (50vw + 0.5 * var(--stage-w) - var(--title-ch) * 1ch - var(--film-gap) - 40px) / 0.774
+  );
+
   height: 97%;
   height: min(var(--film-h), var(--film-cap));
   width: auto;
-  left: var(--lantern-x);
-  top: var(--lantern-y);
-  /* La lanterne dans son image. Ne pas toucher sans remesurer. */
-  transform: translate(-36.98%, -22.04%);
+
   /* Le faisceau sort largement de l'image : sans cela il serait coupé
      à son bord, ce qui lui retire précisément la course qu'on veut
      voir. La section, elle, coupe (overflow: hidden). */
@@ -489,7 +517,6 @@
     /* En pile, le titre a toute la largeur pour lui : il respire un peu
        plus. (Règle perdue lors d'une réécriture du bloc, rétablie ici.) */
     --title-ch: 18;
-    --lantern-x: 50%;
     /* UNE SEULE formule sur toute la plage empilée — deux paliers
        faisaient sauter le dessin de 475 à 357 px au passage du seuil,
        en plein redimensionnement.
@@ -642,30 +669,14 @@
    50cqw, son bord passait sous le bord de l'écran et la vague s'y
    trouvait coupée. Le dessin est ~12 % plus petit qu'en latin ; c'est
    ce que coûte un titre plus large, et c'est mieux que de le rogner. */
-[dir='rtl'] .hero {
-  /* Le plafond n'est plus mesuré sur la SCÈNE mais sur la FENÊTRE. La
-     scène s'arrête à la colonne de texte (1280 px), alors que la
-     section, elle, va d'un bord à l'autre : tout l'espace à gauche de
-     la colonne était inutilisable sous l'ancienne mesure, et le dessin
-     rapetissait pour rien. Le coefficient vient de la contrainte
-     réelle — que le dessin ne sorte pas par la gauche :
-     0,4354·largeur ≤ (fenêtre + colonne)/2 − plafond titre − écart. */
-  --film-cap: calc(64vw - 240px);
-}
-
-/* ANCRAGE PAR LE BORD DU DESSIN, pas par la lanterne. 30,52 % est la
-   distance du bord droit du dessin au bord droit de l'image : ce
-   décalage annule la taille du film, si bien que `right` place le bord
-   du DESSIN — et lui seul — à distance fixe du texte. Le film peut
-   alors grandir vers la gauche sans que l'écart bouge d'un pixel.
-
-   `font-size` est repris du titre pour que `ch` s'y mesure dans la même
-   police à la même taille : l'écart suit le titre même si les métriques
-   de Plex Sans Arabic ne sont pas celles qu'on croit. */
+/* Même ancrage, de l'autre bord : 30,52 % est la position du bord DROIT
+   du dessin dans son image. Le plafond de taille, lui, est le même — sa
+   formule ne distingue pas les deux sens. La police suit celle du titre
+   arabe, sans quoi `ch` se mesurerait dans la mauvaise. */
 [dir='rtl'] .hero__film {
   left: auto;
   right: calc(var(--title-ch) * 1ch + var(--film-gap));
-  font-size: var(--t-display);
+  font-family: var(--font-arabic);
   transform: translate(30.52%, -22.04%);
 }
 

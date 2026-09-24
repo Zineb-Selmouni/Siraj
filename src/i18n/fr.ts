@@ -19,6 +19,7 @@ export const fr = {
     darija: 'Darija',
     figures: 'Chiffres',
     offers: 'Offres',
+    publisher: 'Éditeur',
     cta: 'Demander un pilote',
     descriptor: 'Veille médiatique',
     switchTo: 'Switch to English',
@@ -38,7 +39,7 @@ export const fr = {
     ctaSecondary: 'Découvrir la plateforme',
     markAlt: 'Le phare Siraj 360, faisceaux allumés sur la vague',
     /* Bandeau de tête : la maison mère et le lieu, avant même le titre. */
-    place: 'Casablanca · Maroc',
+    place: 'Rabat · Maroc',
     /* Sens du nom, relevé dans la charte (brand.arabicName). */
     nameMeaning: 'La lampe, le flambeau',
   },
@@ -433,6 +434,30 @@ export const fr = {
     footnote: 'Tarification en MAD · co-financement R&D possible · pilote gratuit sur demande.',
   },
 
+  publisher: {
+    eyebrow: 'L’éditeur',
+    title: 'Siraj 360 est édité par Harmony.',
+    lede: 'Siraj 360 n’est pas un produit isolé : il sort d’une maison qui construit des systèmes d’information pour le secteur public et l’industrie depuis plus de dix ans.',
+    figures: [
+      { value: '+11', label: 'ans d’expertise', note: 'IA, IoT et ville intelligente' },
+      { value: '+110', label: 'experts', note: 'Équipe pluridisciplinaire' },
+      { value: '+150', label: 'clients', note: 'Afrique et région MENA' },
+      { value: '+250', label: 'projets digitaux', note: '15 brevets et innovations' },
+    ],
+    pillarsTitle: 'Quatre domaines',
+    pillars: [
+      'Intelligence documentaire et savoir numérique',
+      'IA, analyse de données et développement',
+      'Industrie intelligente X.0 — IoT et robotique',
+      'Villes intelligentes et intelligence territoriale',
+    ],
+    addressTitle: 'Siège',
+    address: 'Villa n° 14, rue Annassime, bloc M, secteur 9, Hay Riad — 10100 Rabat',
+    labTitle: 'Centre d’innovation',
+    lab: 'Villa n° 9, rue Al Kassous, secteur 11, Hay Riad — 10100 Rabat',
+    footnote: 'Chiffres publiés par Harmony sur harmony.ma.',
+  },
+
   pilot: {
     eyebrow: 'Prochaine étape',
     title: 'Lancez votre pilote, mesurez la valeur.',
@@ -474,6 +499,10 @@ export const fr = {
       required: 'Ce champ est obligatoire.',
       invalidEmail: 'Saisissez une adresse e-mail valide.',
       consentRequired: 'Votre accord est nécessaire pour traiter la demande.',
+      privacyTitle: 'Données à caractère personnel',
+      privacy:
+        'Les informations recueillies sont traitées par Harmony, Hay Riad — 10100 Rabat, aux seules fins d’instruire votre demande de pilote. Elles ne sont ni cédées à des tiers ni utilisées à d’autres fins, et sont conservées le temps de l’échange commercial. Conformément à la loi 09-08, vous disposez d’un droit d’accès, de rectification et d’opposition, que vous pouvez exercer à l’adresse ci-dessus.',
+      privacyCndp: 'Traitement déclaré à la CNDP sous le n° ',
     },
   },
 
@@ -483,7 +512,7 @@ export const fr = {
     catalog: 'Réf. produit P03 — Veille médiatique & intelligence stratégique',
     contactTitle: 'Contact',
     officeTitle: 'Siège',
-    office: 'Harmony Technology · Casablanca, Maroc',
+    office: 'Harmony · Hay Riad, 10100 Rabat, Maroc',
     siteTitle: 'Site',
     rights: 'Tous droits réservés.',
     legal: 'Mentions légales',
