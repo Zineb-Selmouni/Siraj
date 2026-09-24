@@ -317,12 +317,52 @@ chose. La nappe, elle, ignore la réserve — la lumière ne s'arrête pas à un
 filet. Vérifié de 700 à 1200 px de fenêtre : 28 à 82 px de marge en haut, 30 à
 44 px en bas, pour un dessin de 380 à 555 px.
 
+**La scène a la largeur de la COLONNE DE TEXTE, pas celle de la fenêtre.**
+Épinglé à un pourcentage de la fenêtre, le film s'éloignait du texte à mesure
+qu'on élargissait — le texte, lui, plafonne à 1280 px : l'écart passait de
+78 px à 1280 à 313 px à 1920. Rapporté à la colonne, il tient entre 52 et 64 px
+de 1240 à 2560.
+
+**Le film se cale sur la plus contraignante des deux mesures de la scène**,
+`min(97cqh, 57cqw)`. Calé sur la seule hauteur, il débordait sur le texte dans
+une fenêtre large et basse ; sur la seule largeur, le mot-symbole passait sous
+la section dans une fenêtre haute. Les navigateurs sans requêtes de conteneur
+retrouvent l'ancien comportement (`height: 97%`), vérifié sans collision.
+
+**Le seuil d'empilement est à 1240 px**, et non 900. Le titre plafonne à 15ch,
+soit 600 px à la taille maximale : à 1080 px de fenêtre il occupe déjà 58 % de
+la colonne, et le dessin en demande 43 % — ils se touchaient.
+
+### En arabe, le phare passe à gauche
+
+Le texte part de la droite, le phare va donc du côté opposé. Le DESSIN n'est
+pas retourné pour autant : la charte l'interdit, et un phare en miroir
+balaierait à contresens. Seule sa position change.
+
+Le dessin n'étant pas centré dans son image — il occupe 25,9 → 69,5 % en
+largeur, la lanterne à 36,98 % — épingler la lanterne en miroir ne met pas le
+dessin en miroir. Le film est donc ancré par sa droite et décalé de 41,56 % de
+sa largeur, soit 30,52 % (bord droit du dessin) + 11,04 % (écart
+lanterne-dessin). Vérifié : la composition est symétrique au pixel près.
+
+> **Le balayage change de moment.** Le faisceau part à 180° — plein gauche — et
+> remonte vers 344°. En LTR le texte est à gauche du phare : il est balayé tout
+> au début, à 2,35 s. En RTL il est à droite, et le faisceau ne l'atteint qu'en
+> fin de course, quand il redescend de la verticale vers 344° — de 3,41 s
+> (300°) à 4,1 s. Le passage de lumière est recalé dessus, et descend au lieu
+> de monter.
+
 **En pile, le film entre dans le flux**, entre la colonne et la bande du bas.
 Le recouvrement devient impossible par construction au lieu d'être évité par un
 calcul de pourcentages — c'est ce calcul qui, appliqué à la hauteur totale,
 posait le film sur le texte suivant. La hauteur réservée est dérivée de
-`--film-w` (`× 0,4163`, soit 74 % du dessin rapporté au format 16:9), donc les
-deux ne peuvent pas se désaccorder.
+`--film-w` (`× 0,4172`, soit les 74,17 % du dessin rapportés au format 16:9),
+donc les deux ne peuvent pas se désaccorder.
+
+Une seule formule couvre toute la plage empilée, plafonnée : le dessin fait
+76,6 % de la largeur d'écran jusqu'à 653 px, puis se fige à 501 px. Deux
+paliers le faisaient sauter de 475 à 357 px au passage du seuil, en plein
+redimensionnement.
 
 > ⚠ **L'encre du film a été adaptée au fond sombre.** Le film ayant été composé
 > pour finir sur du papier, son mot-symbole est un charbon qui tombe à 1,13:1

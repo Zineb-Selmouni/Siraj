@@ -50,7 +50,14 @@
      dessin descend jusqu'à 90 % de l'image, il lui faut donc de la
      place dessous ; et le faisceau part à l'horizontale à la hauteur
      de la lanterne, c'est-à-dire en travers du titre. */
-  --lantern-x: 70%;
+  /* La scène a la LARGEUR DE LA COLONNE DE TEXTE, pas celle de la
+     fenêtre. Épinglé à un pourcentage de la fenêtre, le film s'éloignait
+     du texte à mesure qu'on élargissait — le texte, lui, plafonne à
+     1280 px. À 1920 l'écart atteignait 313 px contre 78 px à 1280 :
+     la même page ne tenait pas la même composition d'un écran à l'autre.
+     Rapporté à la colonne, l'écart est constant. */
+  --stage-w: calc(min(100%, 1280px) - var(--gutter) * 2);
+  --lantern-x: 67%;
   /* Remontée à 28 % : le dessin descend bas dans son image, et c'est en
      HAUT que la section avait de la place — au-dessus du phare, là où
      il n'y a que le faisceau. */
@@ -69,13 +76,18 @@
      aussi la bande du bas, donc son centre ne se mesure pas dans le
      même cadre que le film. */
   --glow-y: 24%;
+  /* La nappe couvre toute la section, la scène non : le centre se
+     recalcule donc en coordonnées de SECTION.
+     bord gauche de la scène + 67 % = 50 % - w/2 + 0,67 w = 50 % + 0,17 w */
+  --glow-x: calc(50% + 0.17 * var(--stage-w));
   /* Le film est dimensionné PAR SA HAUTEUR, pas par la largeur de la
      fenêtre. Le dessin occupe 74 % de la hauteur de l'image, et la
      section est plafonnée à 880 px : à 1920 de large, un film calé sur
      la largeur mesurait 1045 px de dessin pour 828 px disponibles, et
      le mot-symbole passait sous la section. Calé sur la hauteur, le
      cadrage tient à toutes les largeurs. */
-  --film-h: 97%;
+  --film-h: 97cqh;
+  --film-cap: 57cqw;
 
   position: relative;
   overflow: hidden;
@@ -94,9 +106,17 @@
    pourcentage d'une section dont le bas est déjà occupé. */
 .hero__stage {
   position: absolute;
-  inset: 0 0 var(--specs-reserve);
+  top: 0;
+  bottom: var(--specs-reserve);
+  left: 50%;
+  width: var(--stage-w);
+  transform: translateX(-50%);
   z-index: 0;
   pointer-events: none;
+  /* Pour que le film puisse se mesurer à la scène sur LES DEUX axes.
+     `size` n'implique pas de rognage (c'est `paint` qui rogne), le
+     faisceau continue donc de déborder. */
+  container-type: size;
 }
 
 /* La nappe ignore cette réserve : la lumière ne s'arrête pas au filet. */
@@ -106,9 +126,16 @@
 
 .hero__film {
   position: absolute;
-  /* En pourcentage de la SCÈNE : le film suit donc la réserve du bas,
-     et le cadrage se recalcule tout seul si elle change. */
-  height: var(--film-h);
+  /* Le film se cale sur la plus contraignante des deux mesures de la
+     scène : sa hauteur, ou sa largeur. Calé sur la seule hauteur, il
+     débordait sur le texte dans une fenêtre large mais basse ; calé sur
+     la seule largeur, le mot-symbole passait sous la section dans une
+     fenêtre haute. `min()` prend celle qui serre.
+
+     La première ligne est le repli des navigateurs sans requêtes de
+     conteneur : ils retrouvent l'ancien comportement, calé en hauteur. */
+  height: 97%;
+  height: min(var(--film-h), var(--film-cap));
   width: auto;
   left: var(--lantern-x);
   top: var(--lantern-y);
@@ -130,7 +157,7 @@
   position: absolute;
   inset: 0;
   background: radial-gradient(
-    ellipse 78% 116% at var(--lantern-x) var(--glow-y),
+    ellipse 78% 116% at var(--glow-x) var(--glow-y),
     rgb(255 214 130 / 0.26) 0%,
     rgb(233 182 98 / 0.14) 28%,
     rgb(150 128 96 / 0.055) 56%,
@@ -435,7 +462,7 @@
   }
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1240px) {
   /* ─── En pile ───────────────────────────────────────────────
      Sur écran étroit, le film ne peut plus passer DERRIÈRE le texte :
      le mot-symbole occuperait la même bande que le chapeau.
@@ -445,12 +472,22 @@
      d'être évité par un calcul de pourcentages — c'est précisément ce
      calcul qui posait la signature sur « 03 · veille temps réel ».
 
+     LE SEUIL EST À 1240 px, et non 900. Le titre plafonne à 15ch, soit
+     600 px à la taille maximale : à 1080 px de fenêtre il occupe déjà
+     58 % de la colonne, et le dessin qui reste à caser en fait 43 %. Les
+     deux ne tiennent pas côte à côte — ils se touchaient, faute d'écart.
+
      La hauteur réservée est CALCULÉE à partir de --film-w (voir la
      scène ci-dessous) : les deux ne peuvent donc pas se désaccorder si
      l'un change. */
   .hero {
     --lantern-x: 50%;
-    --film-w: 132vw;
+    /* UNE SEULE formule sur toute la plage empilée, plafonnée : le
+       dessin fait 77 % de la largeur d'écran jusqu'à 653 px, puis se
+       fige. Deux paliers (132vw au-dessus de 620, 176vw en dessous)
+       faisaient sauter le dessin de 475 à 357 px au passage du seuil,
+       en plein redimensionnement. */
+    --film-w: min(176vw, 1150px);
 
     min-height: auto;
     padding-block: clamp(32px, 6vw, 56px) 0;
@@ -458,13 +495,17 @@
 
   .hero__stage {
     position: relative;
-    inset: auto;
+    top: auto;
+    bottom: auto;
+    left: auto;
+    width: 100%;
+    transform: none;
     order: 1;
     /* La réserve DÉCOULE de la taille du film : le dessin fait 74 % de
        la hauteur de l'image, laquelle fait la largeur / 1,778. Soit
-       0,74 / 1,778 = 0,4163 de la largeur. Changer --film-w ajuste donc
+       0,7417 / 1,7778 = 0,4172 de la largeur. Changer --film-w ajuste donc
        la réserve toute seule — les deux ne peuvent pas se désaccorder. */
-    height: calc(var(--film-w) * 0.4163);
+    height: calc(var(--film-w) * 0.4172);
     margin-top: clamp(20px, 5vw, 36px);
   }
 
@@ -514,7 +555,7 @@
   /* Le film déborde des deux côtés : la lumière s'éteint au bord de
      l'écran au lieu de s'arrêter dans la gouttière. La réserve suit. */
   .hero {
-    --film-w: 176vw;
+    --film-w: min(176vw, 1150px);
   }
 }
 
@@ -535,13 +576,71 @@
   }
 }
 
-/* ─── Sens de lecture ─────────────────────────────────────────────
-   La scène ne se retourne PAS. La charte interdit de mettre le signe en
-   miroir, et retourné, son faisceau balaierait vers le large au lieu du
-   titre — c'est-à-dire l'inverse de ce que toute cette mise en scène
-   cherche. Le film garde donc sa position physique (`left`, et non une
-   propriété logique) ; seule la colonne de texte repasse en RTL.
-   ───────────────────────────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════════
+   Sens de lecture
+
+   En arabe, le texte part de la droite : le phare passe donc À GAUCHE.
+
+   Le DESSIN n'est pas retourné pour autant — la charte l'interdit, et
+   un phare en miroir balaierait à contresens. Seule sa POSITION change.
+
+   Le dessin n'étant pas centré dans son image (il occupe 25,9 → 69,5 %
+   en largeur, la lanterne à 36,98 %), épingler la lanterne en miroir ne
+   met pas le DESSIN en miroir. On ancre donc le film par sa droite et
+   on décale de 41,56 % de sa largeur — soit 30,52 % (le bord droit du
+   dessin dans son image) + 11,04 % (l'écart lanterne-dessin) — ce qui
+   place le bord droit du dessin à la distance exacte qu'avait son bord
+   gauche de l'autre côté. La composition est symétrique au pixel près.
+
+   LE BALAYAGE CHANGE DE MOMENT. Le faisceau part à 180° — plein gauche
+   — et remonte vers 344°, en haut à droite. En LTR le texte est à
+   gauche du phare : il est balayé tout au DÉBUT (2,35 s). En RTL il est
+   à droite : le faisceau ne l'atteint qu'en fin de course, quand il
+   redescend de la verticale vers 344° — soit de 3,41 s (300°) à 4,1 s.
+   Le passage de lumière suit, et descend au lieu de monter.
+   ═══════════════════════════════════════════════════════════════ */
+
+[dir='rtl'] .hero__film {
+  left: auto;
+  right: var(--lantern-x);
+  transform: translate(41.56%, -22.04%);
+}
+
+[dir='rtl'] .hero__glow {
+  --glow-x: calc(50% - 0.17 * var(--stage-w));
+}
+
+[dir='rtl'] .hero__rake {
+  animation-name: hero-rake-rtl;
+  animation-delay: 3400ms;
+}
+
+[dir='rtl'] .hero__streak {
+  animation-delay: 3450ms;
+}
+
+@keyframes hero-rake-rtl {
+  0% {
+    background-position: 0 -38%;
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    background-position: 0 118%;
+    opacity: 0;
+  }
+}
+
+/* En pile, le film reprend sa place centrée : il n'y a plus de côté. */
+@media (max-width: 1240px) {
+  [dir='rtl'] .hero__film {
+    right: auto;
+    left: 50%;
+    transform: translate(-47.7%, -53%);
+  }
+}
 
 [dir='rtl'] .hero__ref-label,
 [dir='rtl'] .hero__ref-loc {
