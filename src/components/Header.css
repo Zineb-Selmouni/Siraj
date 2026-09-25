@@ -39,13 +39,14 @@
   flex: 0 0 auto;
 }
 
-/* Le lockup dessiné remplace signe + nom composé. Il est dimensionné
-   par sa LARGEUR : son rapport (≈ 2,87) est celui du fichier, et le
-   laisser calculer sa hauteur évite toute déformation si la livraison
-   est recadrée un jour. */
+/* Dimensionné par sa HAUTEUR, et non par sa largeur. Les deux écritures
+   n'ont pas le même rapport — 2,87 en latin, 2,04 en arabe — si bien
+   qu'à largeur égale le lockup arabe serait 41 % plus haut et
+   déborderait de la barre. À hauteur égale, les deux occupent la même
+   place et la largeur s'ajuste. */
 .brand__lockup {
-  width: clamp(92px, 9vw, 116px);
-  height: auto;
+  height: clamp(30px, 3.2vw, 38px);
+  width: auto;
   flex: 0 0 auto;
 }
 

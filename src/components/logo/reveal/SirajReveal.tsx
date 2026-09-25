@@ -76,6 +76,25 @@ const TAG = 'ÉCLAIRER AUJOURD’HUI, ANTICIPER DEMAIN'
 const SUB_Y = WTOP + 170 * WS + 66
 const TAG_Y = SUB_Y + 56
 
+/* ─── L'arabe ─────────────────────────────────────────────────────
+   Le film arabe est le MÊME, à trois choses près : le mot-symbole est
+   composé en Reem Kufi plutôt que tracé lettre à lettre, les deux
+   lignes passent en Tajawal, et la composition se décale de (110, -40)
+   — l'arabe est plus large et moins haut que SIRAJ, le centre optique
+   n'est donc pas au même endroit.
+
+   Le mot-symbole arabe est le seul endroit de la page où un
+   mot-symbole est COMPOSÉ et non dessiné. C'est le choix du studio,
+   pas le nôtre : la livraison le fait ainsi.
+   ───────────────────────────────────────────────────────────────── */
+
+const AR_WORD = 'سراج'
+const AR_SUB = 'منصة الرصد واليقظة'
+const AR_TAG = 'نُنير الحاضر، ونستشرف المستقبل'
+const AR_CENTRE = 443
+const AR_DX = 110
+const AR_DY = -40
+
 const PALETTES = {
   Classic: ['#F3D58A', '#D2A23F', '#9E6C1E'],
   Amber: ['#F6CF86', '#D8963A', '#A2601A'],
@@ -96,8 +115,22 @@ const PALETTES = {
  * elle, ils restent à faire confirmer par le studio.
  */
 const INK = {
-  paper: { top: '#3C4047', mid: CH, bottom: '#1E2025', sub: CH, tag: '#4A4D53' },
-  dark: { top: '#EFECE5', mid: '#E4E0D7', bottom: '#D8D3C8', sub: '#E4E0D7', tag: '#B9B3A6' },
+  paper: {
+    top: '#3C4047',
+    mid: CH,
+    bottom: '#1E2025',
+    sub: CH,
+    tag: '#4A4D53',
+    arRelief: '#5A5E66',
+  },
+  dark: {
+    top: '#EFECE5',
+    mid: '#E4E0D7',
+    bottom: '#D8D3C8',
+    sub: '#E4E0D7',
+    tag: '#B9B3A6',
+    arRelief: '#9A9489',
+  },
 } as const
 
 type Ink = (typeof INK)[keyof typeof INK]
@@ -116,6 +149,135 @@ function textWidth(str: string, font: string, ls: number) {
   if (!c) return 0
   c.font = font
   return c.measureText(str).width + ls * (str.length - 1)
+}
+
+/**
+ * Le mot arabe est composé, donc mesuré : sa boîte dépend de la fonte.
+ * On le met à l'échelle pour qu'il tienne dans 600 × 230 unités (fois
+ * WS), et on en déduit sa ligne de base — dont dépendent ensuite les
+ * deux lignes de texte, placées SOUS lui.
+ *
+ * Les valeurs de repli (80 / 30) servent tant que Reem Kufi n'est pas
+ * chargée : la mesure porte alors sur la police de substitution.
+ */
+function arMetrics() {
+  if (typeof document === 'undefined') return null
+  _cv = _cv || document.createElement('canvas')
+  const c = _cv.getContext('2d')
+  if (!c) return null
+  c.font = '700 100px "Reem Kufi"'
+  const mt = c.measureText(AR_WORD)
+  const asc = mt.actualBoundingBoxAscent || 80
+  const desc = mt.actualBoundingBoxDescent || 30
+  const k = Math.min((600 * WS) / mt.width, (230 * WS) / (asc + desc))
+  const w = mt.width * k
+  const inkTop = WTOP - 6
+  const base = inkTop + asc * k
+  return { k, w, inkTop, base, bottom: base + desc * k, size: 100 * k }
+}
+
+type ArMetrics = NonNullable<ReturnType<typeof arMetrics>>
+
+/**
+ * Le point du ج, en or.
+ *
+ * C'est la signature de la marque : le triangle d'or dans le A latin, le
+ * point d'or dans le jīm arabe. Mais le mot arabe est COMPOSÉ, pas
+ * tracé — on ne peut donc pas viser un tracé nommé, il faut retrouver le
+ * point dans le rendu.
+ *
+ * La livraison le fait en rastérisant le mot, puis en cherchant ses
+ * composantes connexes : le corps du mot est la grande composante la
+ * plus à gauche, le point est la petite composante isolée qui tombe
+ * dans sa boîte. Les coordonnées sont rendues relatives au corps de la
+ * fonte, donc valables à n'importe quelle échelle.
+ *
+ * Le résultat est mis en cache — mais seulement une fois Reem Kufi
+ * réellement chargée, sans quoi on mémoriserait la position du point
+ * dans la police de repli.
+ */
+type JeemDot = { cx: number; cy: number; r: number; top: number; bot: number }
+
+let _jeem: JeemDot | null = null
+
+function findJeemDot(): JeemDot | null {
+  const W = 700
+  const H = 320
+  const F = 100
+  const B = 200 // ligne de base
+
+  const cv = document.createElement('canvas')
+  cv.width = W
+  cv.height = H
+  const c = cv.getContext('2d')
+  if (!c) return null
+  c.font = `700 ${F}px "Reem Kufi"`
+  c.direction = 'rtl'
+  c.textAlign = 'center'
+  c.textBaseline = 'alphabetic'
+  c.fillStyle = '#000'
+  c.fillText(AR_WORD, W / 2, B)
+
+  const d = c.getImageData(0, 0, W, H).data
+  const lab = new Int32Array(W * H)
+  const comps: { minx: number; maxx: number; miny: number; maxy: number; n: number }[] = []
+
+  for (let i = 0; i < W * H; i++) {
+    if (lab[i] || d[i * 4 + 3] < 128) continue
+    const k = { minx: 1e9, maxx: -1, miny: 1e9, maxy: -1, n: 0 }
+    const st = [i]
+    lab[i] = comps.length + 1
+    while (st.length) {
+      const q = st.pop() as number
+      const x = q % W
+      const y = (q / W) | 0
+      k.n++
+      if (x < k.minx) k.minx = x
+      if (x > k.maxx) k.maxx = x
+      if (y < k.miny) k.miny = y
+      if (y > k.maxy) k.maxy = y
+      for (const nb of [q - 1, q + 1, q - W, q + W]) {
+        if (nb < 0 || nb >= W * H) continue
+        if (lab[nb] || d[nb * 4 + 3] < 128) continue
+        if (Math.abs((nb % W) - x) > 1) continue // pas de saut de ligne
+        lab[nb] = comps.length + 1
+        st.push(nb)
+      }
+    }
+    comps.push(k)
+  }
+  if (!comps.length) return null
+
+  const body = comps.reduce(
+    (a, b) => (b.n > 200 && b.minx < a.minx ? b : a),
+    comps.find((k) => k.n > 200) || comps[0],
+  )
+  const dot = comps
+    .filter((k) => k !== body && k.n > 20 && k.n < body.n * 0.2)
+    .map((k) => ({ ...k, cx: (k.minx + k.maxx + 1) / 2, cy: (k.miny + k.maxy + 1) / 2 }))
+    .filter(
+      (k) =>
+        k.cx > body.minx && k.cx < body.maxx && k.cy > body.miny - 5 && k.cy < body.maxy + 5,
+    )
+    .sort((a, b) => b.n - a.n)[0]
+  if (!dot) return null
+
+  return {
+    cx: (dot.cx - W / 2) / F,
+    cy: (dot.cy - B) / F,
+    r: Math.max(dot.maxx - dot.minx + 1, dot.maxy - dot.miny + 1) / 2 / F,
+    top: (dot.miny - B) / F,
+    bot: (dot.maxy + 1 - B) / F,
+  }
+}
+
+function jeemDot(): JeemDot | null {
+  if (typeof document === 'undefined') return null
+  const loaded = !document.fonts || document.fonts.check(`700 100px "Reem Kufi"`, AR_WORD)
+  if (_jeem && loaded) return _jeem
+  const found = findJeemDot()
+  if (loaded) _jeem = found
+  return found
 }
 
 function useFontsReady() {
@@ -447,65 +609,198 @@ function Wordmark({ T, gold }: { T: number; gold: readonly string[] }) {
   )
 }
 
+/**
+ * Le mot-symbole arabe.
+ *
+ * Il n'a pas de lettres séparées — l'arabe est une écriture liée — donc
+ * pas de montée lettre à lettre comme en latin. La livraison lui donne
+ * autre chose : un volet qui le découvre de DROITE À GAUCHE, dans le
+ * sens de lecture, pendant qu'il monte. Trois calques composent le
+ * relief : une ombre portée, un ton intermédiaire décalé, puis l'encre.
+ */
+function ArWordmark({
+  T,
+  gold,
+  ink,
+  m,
+}: {
+  T: number
+  gold: readonly string[]
+  ink: Ink
+  m: ArMetrics
+}) {
+  const x0 = AR_CENTRE - m.w / 2
+  const wipe = MOTION.draw(T, CUES.Name, 1.3)
+  const rise = MOTION.enter(T, CUES.Name, 1.1)
+  const jd = jeemDot()
+
+  const layer = (fill: string, dx: number, dy: number, op: number) => (
+    <text
+      x={AR_CENTRE + dx}
+      y={m.base + dy}
+      textAnchor="middle"
+      direction="rtl"
+      fontFamily="'Reem Kufi', Tajawal, sans-serif"
+      fontWeight="700"
+      fontSize={m.size}
+      fill={fill}
+      opacity={op}
+    >
+      {AR_WORD}
+    </text>
+  )
+
+  return (
+    <g>
+      <defs>
+        <linearGradient
+          id="sr-char-ar"
+          x1="0"
+          y1={m.inkTop}
+          x2="0"
+          y2={m.bottom}
+          gradientUnits="userSpaceOnUse"
+        >
+          <stop offset="0" stopColor={ink.top} />
+          <stop offset=".55" stopColor={ink.mid} />
+          <stop offset="1" stopColor={ink.bottom} />
+        </linearGradient>
+        <clipPath id="sr-ar-wipe">
+          <rect
+            x={lerp(x0 + m.w + 40, x0 - 60, wipe)}
+            y={WTOP - 80}
+            width={m.w + 160}
+            height="500"
+          />
+        </clipPath>
+        {jd && (
+          <clipPath id="sr-jeem-dot">
+            <circle
+              cx={AR_CENTRE + jd.cx * m.size}
+              cy={m.base + jd.cy * m.size}
+              r={(jd.r + 0.018) * m.size}
+            />
+          </clipPath>
+        )}
+        {jd && (
+          <linearGradient
+            id="sr-jeem-gold"
+            x1="0"
+            y1={m.base + jd.top * m.size}
+            x2="0"
+            y2={m.base + jd.bot * m.size}
+            gradientUnits="userSpaceOnUse"
+          >
+            <stop offset="0" stopColor={gold[0]} />
+            <stop offset=".5" stopColor={gold[1]} />
+            <stop offset="1" stopColor={gold[2]} />
+          </linearGradient>
+        )}
+      </defs>
+      <g
+        clipPath="url(#sr-ar-wipe)"
+        transform={`translate(0 ${lerp(30, 0, rise)})`}
+        opacity={rise}
+      >
+        {layer('#000000', 3, 4.5, 0.14)}
+        {layer(ink.arRelief, -1.2, -1.2, 1)}
+        {layer('url(#sr-char-ar)', 0, 0, 1)}
+        {/* Le point du ج, repassé en or : la signature de la marque,
+            comme le triangle dans le A latin. */}
+        {jd && (
+          <g clipPath="url(#sr-jeem-dot)">
+            {layer(gold[0], -1.2, -1.2, 1)}
+            {layer('url(#sr-jeem-gold)', 0, 0, 1)}
+          </g>
+        )}
+      </g>
+    </g>
+  )
+}
+
 function Lines({
   T,
   gold,
   ink,
   fontsReady,
+  ar,
 }: {
   T: number
   gold: readonly string[]
   ink: Ink
   fontsReady: boolean
+  /** Métriques du mot arabe, ou `null` en latin. */
+  ar: ArMetrics | null
 }) {
   const lp = MOTION.draw(T, CUES.Tagline, 0.9)
   const sp = MOTION.enter(T, CUES.Tagline + 0.15, 1.1)
   const tg = MOTION.enter(T, CUES.Tagline + 0.6, 1.0)
-  const ls = lerp(22, 9, sp)
+
+  /* Les deux lignes suivent le mot-symbole : en arabe elles se placent
+     sous SA base mesurée, pas sous une constante. */
+  const ls = ar ? 0 : lerp(22, 9, sp)
+  const sub = ar ? AR_SUB : SUB
+  const tag = ar ? AR_TAG : TAG
+  const sfs = ar ? 36 : 29
+  const tfs = ar ? 27 : 20
+  const subY = ar ? ar.bottom + 54 : SUB_Y
+  const tagY = ar ? ar.bottom + 116 : TAG_Y
+  const ff = ar ? 'Tajawal, sans-serif' : 'Jost, Futura, sans-serif'
+  const centre = ar ? AR_CENTRE : 600
+
   const sw = useMemo(() => {
-    void fontsReady // re-mesurer dès que Jost est là : la mesure en dépend
-    return textWidth(SUB, '600 29px Jost', 9)
-  }, [fontsReady])
-  const ly = SUB_Y - 29 * 0.36 - 1.5
+    void fontsReady // re-mesurer dès que la fonte est là : la mesure en dépend
+    return ar ? textWidth(AR_SUB, '700 36px Tajawal', 0) : textWidth(SUB, '600 29px Jost', 9)
+  }, [fontsReady, ar])
+  const ly = subY - sfs * (ar ? 0.3 : 0.36) - 1.5
   const gap = 22
   const ll = 58
 
   return (
     <g>
       <rect
-        x={600 - sw / 2 - gap - ll * lp}
+        x={centre - sw / 2 - gap - ll * lp}
         y={ly}
         width={ll * lp}
         height="3"
         rx="1.5"
         fill={gold[1]}
       />
-      <rect x={600 + sw / 2 + gap} y={ly} width={ll * lp} height="3" rx="1.5" fill={gold[1]} />
+      <rect
+        x={centre + sw / 2 + gap}
+        y={ly}
+        width={ll * lp}
+        height="3"
+        rx="1.5"
+        fill={gold[1]}
+      />
       <text
-        x={600 + ls / 2}
-        y={SUB_Y}
+        x={centre + ls / 2}
+        y={subY}
         textAnchor="middle"
-        fontFamily="Jost, Futura, sans-serif"
-        fontWeight="600"
-        fontSize="29"
+        direction={ar ? 'rtl' : 'ltr'}
+        fontFamily={ff}
+        fontWeight={ar ? 700 : 600}
+        fontSize={sfs}
         letterSpacing={ls}
         fill={ink.sub}
         opacity={sp}
       >
-        {SUB}
+        {sub}
       </text>
       <text
-        x={603.5}
-        y={TAG_Y + lerp(14, 0, tg)}
+        x={ar ? centre : 603.5}
+        y={tagY + lerp(14, 0, tg)}
         textAnchor="middle"
-        fontFamily="Jost, Futura, sans-serif"
+        direction={ar ? 'rtl' : 'ltr'}
+        fontFamily={ff}
         fontWeight="500"
-        fontSize="20"
-        letterSpacing="7"
+        fontSize={tfs}
+        letterSpacing={ar ? 0 : 7}
         fill={ink.tag}
         opacity={tg}
       >
-        {TAG}
+        {tag}
       </text>
     </g>
   )
@@ -528,6 +823,7 @@ export function SirajReveal({
   intro = 'Night',
   gold = 'Classic',
   surface = 'paper',
+  script = 'latin',
   className,
   title,
 }: {
@@ -535,6 +831,8 @@ export function SirajReveal({
   intro?: 'Night' | 'Light'
   gold?: keyof typeof PALETTES
   surface?: keyof typeof INK
+  /** L'écriture du mot-symbole. Le reste du film est identique. */
+  script?: 'latin' | 'arabic'
   className?: string
   title?: string
 }) {
@@ -545,9 +843,21 @@ export function SirajReveal({
   const onPaper = surface === 'paper'
   const night = intro === 'Night'
 
+  /* Mesuré à chaque fois que la fonte bouge : la boîte du mot arabe
+     dépend de Reem Kufi, et toute la composition en dépend ensuite. */
+  const ar = useMemo(() => {
+    void fontsReady
+    return script === 'arabic' ? arMetrics() : null
+  }, [fontsReady, script])
+
+  /* L'arabe est plus large et moins haut que SIRAJ : son centre optique
+     n'est pas au même endroit, d'où le décalage de la composition. */
+  const ox = ar ? LOGO_X + AR_DX : LOGO_X
+  const oy = ar ? LOGO_Y + AR_DY : LOGO_Y
+
   const cam = lerp(1.08, 1.0, MOTION.draw(T, 0, AUTHORED_TOTAL))
-  const lx = 960 + (LOGO_X + LANTERN[0] - 960) * cam
-  const ly = 540 + (LOGO_Y + LANTERN[1] - 540) * cam
+  const lx = 960 + (ox + LANTERN[0] - 960) * cam
+  const ly = 540 + (oy + LANTERN[1] - 540) * cam
   const flood = night ? MOTION.draw(T, CUES.Sweep + 0.35, 1.5) : 1
 
   return (
@@ -563,12 +873,16 @@ export function SirajReveal({
       {onPaper && <rect width="1920" height="1080" fill={night ? DARK : PAPER} />}
       {onPaper && night && <circle cx={lx} cy={ly} r={flood * 2400} fill={PAPER} />}
       <g
-        transform={`translate(960 540) scale(${cam}) translate(-960 -540) translate(${LOGO_X} ${LOGO_Y})`}
+        transform={`translate(960 540) scale(${cam}) translate(-960 -540) translate(${ox} ${oy})`}
       >
         <Beam T={T} />
         <SymbolArt T={T} gold={palette} />
-        <Wordmark T={T} gold={palette} />
-        <Lines T={T} gold={palette} ink={ink} fontsReady={fontsReady} />
+        {ar ? (
+          <ArWordmark T={T} gold={palette} ink={ink} m={ar} />
+        ) : (
+          <Wordmark T={T} gold={palette} />
+        )}
+        <Lines T={T} gold={palette} ink={ink} fontsReady={fontsReady} ar={ar} />
       </g>
     </svg>
   )

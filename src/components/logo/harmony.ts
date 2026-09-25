@@ -1,5 +1,5 @@
 /* Généré par scripts/build-logo.mjs — NE PAS ÉDITER À LA MAIN. */
-/* Source : « harmony/ » (livraison de design, hors dépôt) */
+/* Source : brand/harmony/ (livraison de design, hors dépôt) */
 
 type Mark = { viewBox: string; inner: string }
 

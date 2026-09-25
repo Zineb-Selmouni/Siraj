@@ -1,102 +1,47 @@
 /**
- * Génère src/components/logo/marks.ts à partir des SVG livrés.
+ * Prépare les fichiers de marque pour le build.
  *
- * Source : « Siraj logo refinement/SVG/ » — livraison de design, hors dépôt
- * comme la charte. Le fichier généré, lui, est versionné : le build ne doit
+ * SOURCE : `brand/`, la livraison de design — hors dépôt, comme la
+ * charte. Les fichiers générés, eux, sont versionnés : le build ne doit
  * pas dépendre d'un dossier de livraison (même règle que tokens.css).
  *
- * Quatre opérations, chacune nécessaire :
+ *   brand/
+ *     harmony/            icon.svg, wordmark.svg
+ *     siraj/
+ *       latin/            animation.html, svg/, png/
+ *       arabic/           animation.html, svg/, png/
  *
- * 1. RETRAIT DES MÉTADONNÉES. Chaque SVG embarque un manifeste C2PA en
- *    base64 — près de 8 ko sur 17, soit 45 % du fichier, qu'aucun
- *    navigateur ne lit.
+ * PRODUIT :
+ *   src/components/logo/marks.ts     les signes, par écriture
+ *   src/components/logo/harmony.ts   le logo de l'éditeur
+ *   public/fonts/*.woff2             les polices que les films composent
  *
- * 2. PRÉFIXAGE DES IDENTIFIANTS. Les trois variantes déclarent les mêmes
- *    ids de dégradés (`siraj-gold-metal`…). Deux variantes sur une même
- *    page produiraient des ids en double : `url(#siraj-gold-metal)`
- *    résoudrait vers la première rencontrée, au hasard de l'ordre du DOM.
- *
- * 3. CLASSES STRUCTURELLES. Chaque groupe nommé reçoit une classe stable
- *    (`sj-beam`, `sj-lantern`…), pour que l'animation vise la même chose
- *    quelle que soit la variante.
- *
- * 4. VARIANTE SUR FOND SOMBRE. La livraison ne contient que des lockups
- *    pour fond clair : l'encre du mot-symbole est un charbon #17191C, qui
- *    tombe à 1,05:1 de contraste sur le bleu-nuit de la page — invisible.
- *    On en dérive une version claire. Voir la note dans le README : c'est
- *    une variante DÉDUITE, à faire confirmer par le studio.
+ * `npm run logo` régénère le tout. Chaque étape se contente d'un
+ * avertissement si sa source manque : une livraison partielle ne casse
+ * pas le build.
  */
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs'
 import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..')
-const srcDir = join(root, 'Siraj logo refinement', 'SVG')
-const outFile = join(root, 'src', 'components', 'logo', 'marks.ts')
-const animFile = join(root, 'Siraj logo refinement', 'Animation', 'SIRAJ_animation.html')
-const hmDir = join(root, 'harmony')
-const hmOut = join(root, 'src', 'components', 'logo', 'harmony.ts')
+const brand = join(root, 'brand')
+const logoDir = join(root, 'src', 'components', 'logo')
 const fontDir = join(root, 'public', 'fonts')
 
+const SCRIPTS = ['latin', 'arabic']
+const VARIANTS = ['symbol', 'compact']
+
 /**
- * Jost, extraite du film.
+ * Encre du mot-symbole sur fond clair → sur fond sombre.
  *
- * Le film compose son sous-titre et sa signature en Jost, et EMBARQUE la
- * fonte dans son bundle. La reprendre là plutôt que chez Google évite de
- * faire dépendre une page qui vend l'hébergement souverain d'un serveur
- * américain — c'est le point n° 1 de la liste avant mise en ligne.
+ * Le logo a été composé pour finir sur du papier : son mot-symbole est
+ * un charbon qui tombe à 1,13:1 sur le bleu-nuit de la page. Cinq
+ * valeurs, invisibles. Tout le reste passe sans retouche — la tour
+ * blanche est à 18,4:1, la vague pâle à 11,9:1, les ors sont justes.
  *
- * Deux sous-ensembles sur trois : latin et latin-ext. Le cyrillique est
- * laissé de côté, aucune des deux lignes n'en contient un caractère.
- *
- * La livraison ne fournit que la graisse 500 et la déclare pour 500 ET
- * 600 : le 600 est donc SYNTHÉTISÉ par le navigateur. C'est ce que fait
- * le film ; la page fait pareil, sans quoi elle en divergerait.
+ * ⚠ Variante DÉDUITE, à faire confirmer par le studio.
  */
-/* Les identifiants du bundle changent à chaque livraison : on ne les
-   code pas en dur. Les sous-ensembles sont reconnus à leur plage Unicode,
-   déclarée dans les @font-face du film. */
-const SUBSETS = [
-  { tag: 'latin-ext', probe: 'U+0100-02BA', name: 'jost-500-latin-ext.woff2' },
-  { tag: 'latin', probe: 'U+0000-00FF', name: 'jost-500-latin.woff2' },
-]
-
-function extractFonts() {
-  if (!existsSync(animFile)) {
-    console.log('  · Film absent — polices existantes conservées.')
-    return
-  }
-  const html = readFileSync(animFile, 'utf8')
-  const open = html.indexOf('<script type="__bundler/manifest">')
-  if (open < 0) return
-  const start = html.indexOf('>', open) + 1
-  const manifest = JSON.parse(html.slice(start, html.indexOf('</script>', start)))
-
-  // Les @font-face vivent dans le HTML sous forme échappée.
-  const css = html.replaceAll('\\n', '\n').replaceAll('\\"', '"')
-  const faces = css.match(/@font-face\s*\{[^}]*\}/g) || []
-
-  mkdirSync(fontDir, { recursive: true })
-  for (const { tag, probe, name } of SUBSETS) {
-    const face = faces.find((f) => f.includes('Jost') && f.includes(probe))
-    const uuid = face && /url\("([0-9a-f-]+)"\)/.exec(face)?.[1]
-    const entry = uuid && manifest[uuid]
-    if (!entry) {
-      console.error(`  ✖ Sous-ensemble Jost introuvable dans le film : ${tag}`)
-      process.exit(1)
-    }
-    const buf = Buffer.from(entry.data, 'base64')
-    writeFileSync(join(fontDir, name), buf)
-    console.log(`      ${name.padEnd(26)} ${(buf.length / 1024).toFixed(1)} ko`)
-  }
-}
-
-const VARIANTS = [
-  { name: 'symbol', prefix: 'sjs' },
-  { name: 'compact', prefix: 'sjc' },
-]
-
-/** Encre du mot-symbole sur fond clair → sur fond sombre. */
 const ON_DARK = [
   ['#17191c', '#f5f2ec'],
   ['#2a2d33', '#e4e0d7'],
@@ -105,23 +50,75 @@ const ON_DARK = [
   ['#1e2025', '#d8d3c8'],
 ]
 
+/**
+ * Les polices que les films composent, et où les prendre.
+ *
+ * Jost porte les deux lignes du film latin ; Reem Kufi le mot-symbole
+ * arabe, Tajawal ses deux lignes. Les prendre dans le bundle plutôt que
+ * chez Google évite de faire dépendre d'un serveur américain une page
+ * qui vend l'hébergement souverain.
+ *
+ * Seuls les sous-ensembles utiles sont extraits : les textes latins ne
+ * contiennent pas de cyrillique, les textes arabes pas de latin.
+ */
+const SUBSETS = { latin: 'U+0000-00FF', 'latin-ext': 'U+0100-02BA', arabic: 'U+0600' }
+
+const FONTS = [
+  { film: 'latin', family: 'Jost', weight: '500', subset: 'latin' },
+  { film: 'latin', family: 'Jost', weight: '500', subset: 'latin-ext' },
+  { film: 'arabic', family: 'Reem Kufi', weight: '700', subset: 'arabic' },
+  { film: 'arabic', family: 'Tajawal', weight: '500', subset: 'arabic' },
+  { film: 'arabic', family: 'Tajawal', weight: '700', subset: 'arabic' },
+]
+
+const slug = (s) => s.toLowerCase().replace(/[^a-z0-9]+/g, '-')
+const kb = (n) => (n / 1024).toFixed(1)
+
+/* ─── Les signes ──────────────────────────────────────────────── */
+
+/**
+ * Nettoie un SVG livré. Quatre opérations, chacune nécessaire :
+ *
+ * 1. Retrait des métadonnées. Chaque fichier embarque un manifeste C2PA
+ *    en base64 — près de 8 ko sur 17, qu'aucun navigateur ne lit.
+ * 2. Préfixage des ids. Les variantes déclarent les mêmes ids de
+ *    dégradés ; deux d'entre elles sur une même page et `url(#…)`
+ *    résoudrait au hasard de l'ordre du DOM.
+ * 3. Classes structurelles, pour que la page puisse viser un groupe
+ *    nommé quelle que soit la variante.
+ * 4. Le viewBox et le contenu, séparés.
+ */
 function clean(svg, prefix) {
   let s = svg.replace(/<metadata>[\s\S]*?<\/metadata>/g, '')
-
-  // Les ids réellement déclarés dans CE fichier, et eux seuls.
   const ids = [...s.matchAll(/\sid="([^"]+)"/g)].map((m) => m[1])
 
   for (const id of ids) {
-    const esc = id.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-    s = s.replace(new RegExp(`\\sid="${esc}"`, 'g'), ` id="${prefix}-${id}"`)
-    s = s.replace(new RegExp(`url\\(#${esc}\\)`, 'g'), `url(#${prefix}-${id})`)
-    s = s.replace(new RegExp(`(xlink:)?href="#${esc}"`, 'g'), `$1href="#${prefix}-${id}"`)
+    s = s.split(` id="${id}"`).join(` id="${prefix}-${id}"`)
+    s = s.split(`url(#${id})`).join(`url(#${prefix}-${id})`)
+    s = s.split(`href="#${id}"`).join(`href="#${prefix}-${id}"`)
   }
+  /* Une classe structurelle sur les GROUPES nommés, pas sur les
+     ressources. Ce qui est déclaré dans <defs> est un dégradé, un
+     masque, un filtre ou un volet : lui coller une classe ne sert à
+     rien et encombre.
 
-  // Classe structurelle stable, dérivée de l'id d'origine.
+     La règle valait « ignorer ce qui commence par siraj- » tant que la
+     livraison nommait ainsi ses defs. La version arabe, exportée depuis
+     le film, les nomme sr-. On regarde donc OÙ l'id est déclaré, pas
+     comment il s'appelle. */
+  const defIds = new Set()
+  for (const block of svg.match(/<defs[\s\S]*?<\/defs>/g) || [])
+    for (const m of block.matchAll(/\sid="([^"]+)"/g)) defIds.add(m[1])
+
+  // Et les ressources déclarées HORS <defs> : le film arabe pose ses
+  // volets à même le balisage, c'est licite et courant.
+  const RESOURCE =
+    /<(?:clipPath|mask|filter|pattern|linearGradient|radialGradient)\s[^>]*id="([^"]+)"/g
+  for (const m of svg.matchAll(RESOURCE)) defIds.add(m[1])
+
   for (const id of ids) {
-    if (id.startsWith('siraj-')) continue // defs : dégradés, masques, filtres
-    s = s.replace(`id="${prefix}-${id}"`, `id="${prefix}-${id}" class="sj-${id}"`)
+    if (defIds.has(id)) continue
+    s = s.split(`id="${prefix}-${id}"`).join(`id="${prefix}-${id}" class="sj-${id}"`)
   }
 
   const viewBox = /viewBox="([^"]+)"/.exec(s)[1]
@@ -130,103 +127,89 @@ function clean(svg, prefix) {
     .replace(/<\/svg>\s*$/, '')
     .replace(/<title>[\s\S]*?<\/title>/g, '')
     .trim()
-
   return { viewBox, inner }
 }
 
 function toDark(inner) {
   let s = inner
-  for (const [from, to] of ON_DARK) {
-    s = s.replace(new RegExp(from, 'gi'), to)
-  }
+  for (const [from, to] of ON_DARK) s = s.replace(new RegExp(from, 'gi'), to)
   return s
 }
 
-if (!existsSync(srcDir)) {
-  if (existsSync(outFile)) {
-    console.log('  · Livraison du logo absente — marks.ts existant conservé.')
-    process.exit(0)
+function marks() {
+  const out = {}
+  for (const script of SCRIPTS) {
+    const dir = join(brand, 'siraj', script, 'svg')
+    if (!existsSync(dir)) {
+      console.log(`  · Signes « ${script} » absents — ignorés.`)
+      continue
+    }
+    out[script] = {}
+    for (const variant of VARIANTS) {
+      const file = join(dir, `${variant}-transparent.svg`)
+      if (!existsSync(file)) {
+        console.error(`  ✖ Manquant : ${file}`)
+        process.exit(1)
+      }
+      // Jeton remplacé À L'EXÉCUTION par un identifiant unique par
+      // instance. Un préfixe fixe suffisait tant qu'un lockup donné ne
+      // paraissait qu'une fois ; l'en-tête et le pied de page affichent
+      // le même, si bien que ses ids de dégradés se retrouvaient en
+      // double dans le document. Voir SirajLogo.tsx.
+      const { viewBox, inner } = clean(readFileSync(file, 'utf8'), '%ID%')
+      out[script][variant] = { viewBox, light: inner, dark: toDark(inner) }
+    }
   }
-  console.error(
-    `\n  ✖ Ni « Siraj logo refinement/SVG/ » ni src/components/logo/marks.ts.\n` +
-      `    Déposez la livraison puis relancez « npm run logo ».\n`,
-  )
-  process.exit(1)
-}
+  if (Object.keys(out).length === 0) return
 
-const parts = []
-for (const { name, prefix } of VARIANTS) {
-  const file = join(srcDir, `SIRAJ_${name}_transparent.svg`)
-  if (!existsSync(file)) {
-    console.error(`  ✖ Manquant : ${file}`)
-    process.exit(1)
-  }
-  const { viewBox, inner } = clean(readFileSync(file, 'utf8'), prefix)
-  parts.push({ name, viewBox, light: inner, dark: toDark(inner) })
-}
+  const body = SCRIPTS.filter((s) => out[s])
+    .map((s) => {
+      const v = VARIANTS.map(
+        (k) => `    ${k}: {
+      viewBox: ${JSON.stringify(out[s][k].viewBox)},
+      light: ${JSON.stringify(out[s][k].light)},
+      dark: ${JSON.stringify(out[s][k].dark)},
+    },`,
+      ).join('\n')
+      return `  ${s}: {\n${v}\n  },`
+    })
+    .join('\n')
 
-const out = `/* Généré par scripts/build-logo.mjs — NE PAS ÉDITER À LA MAIN. */
-/* Source : « Siraj logo refinement/SVG/ » (livraison de design, hors dépôt) */
+  mkdirSync(logoDir, { recursive: true })
+  writeFileSync(
+    join(logoDir, 'marks.ts'),
+    `/* Généré par scripts/build-logo.mjs — NE PAS ÉDITER À LA MAIN. */
+/* Source : les dossiers svg de brand/siraj (livraison, hors dépôt) */
 
-export type LogoVariant = ${parts.map((p) => `'${p.name}'`).join(' | ')}
+export type LogoScript = ${SCRIPTS.map((s) => `'${s}'`).join(' | ')}
+export type LogoVariant = ${VARIANTS.map((v) => `'${v}'`).join(' | ')}
 export type LogoSurface = 'light' | 'dark'
 
 type Mark = { viewBox: string; light: string; dark: string }
 
-export const MARKS: Record<LogoVariant, Mark> = {
-${parts
-  .map(
-    (p) => `  ${p.name}: {
-    viewBox: ${JSON.stringify(p.viewBox)},
-    light: ${JSON.stringify(p.light)},
-    dark: ${JSON.stringify(p.dark)},
-  },`,
-  )
-  .join('\n')}
+export const MARKS: Record<LogoScript, Record<LogoVariant, Mark>> = {
+${body}
 }
-`
-
-mkdirSync(dirname(outFile), { recursive: true })
-writeFileSync(outFile, out, 'utf8')
-
-const kb = (n) => (n / 1024).toFixed(1)
-console.log('  ✔ marks.ts généré')
-for (const p of parts) {
-  const orig = readFileSync(join(srcDir, `SIRAJ_${p.name}_transparent.svg`), 'utf8').length
-  console.log(
-    `      ${p.name.padEnd(8)} ${kb(orig)} ko → ${kb(p.light.length)} ko  (viewBox ${p.viewBox})`,
+`,
+    'utf8',
   )
+  console.log('  ✔ marks.ts')
+  for (const s of SCRIPTS)
+    if (out[s])
+      for (const v of VARIANTS)
+        console.log(`      ${s.padEnd(7)} ${v.padEnd(8)} ${out[s][v].viewBox}`)
 }
 
-console.log('  ✔ Jost extraite du film')
-extractFonts()
+/* ─── Le logo de l'éditeur ────────────────────────────────────── */
 
-/**
- * Le logo de l'éditeur.
- *
- * Deux fichiers : l'icône (or de charte #FFC933) et le mot-symbole, tracé
- * et non composé. Même règle que pour Siraj — la livraison reste hors
- * dépôt, le fichier généré est versionné.
- *
- * Deux retouches, et deux seulement :
- *
- * 1. L'id du masque (`clip0_16960_200`) est préfixé. Un id générique de
- *    ce genre entre en collision au premier autre export Figma posé sur
- *    la même page.
- *
- * 2. Les tracés du mot-symbole passent de `white` à `currentColor`. Le
- *    rendu sur fond sombre est IDENTIQUE — la couleur y est héritée en
- *    blanc — mais la page peut alors le poser ailleurs sans toucher au
- *    fichier. L'or de l'icône, lui, n'est pas touché : c'est la couleur
- *    de la marque.
- */
 function harmony() {
-  if (!existsSync(hmDir)) {
-    console.log('  · Logo éditeur absent — harmony.ts existant conservé.')
+  const dir = join(brand, 'harmony')
+  if (!existsSync(dir)) {
+    console.log('  · Logo éditeur absent — harmony.ts conservé.')
     return
   }
   const read = (name) => {
-    const file = join(hmDir, name)
+    const file = join(dir, name)
     if (!existsSync(file)) {
       console.error(`  ✖ Manquant : ${file}`)
       process.exit(1)
@@ -236,20 +219,26 @@ function harmony() {
       svg = svg.split(` id="${id}"`).join(` id="hm-${id}"`)
       svg = svg.split(`url(#${id})`).join(`url(#hm-${id})`)
     }
-    const viewBox = /viewBox="([^"]+)"/.exec(svg)[1]
-    const inner = svg
-      .replace(/^[\s\S]*?<svg[^>]*>/, '')
-      .replace(/<\/svg>\s*$/, '')
-      .trim()
-    return { viewBox, inner }
+    return {
+      viewBox: /viewBox="([^"]+)"/.exec(svg)[1],
+      inner: svg
+        .replace(/^[\s\S]*?<svg[^>]*>/, '')
+        .replace(/<\/svg>\s*$/, '')
+        .trim(),
+    }
   }
 
-  const icon = read('logo_harmony.svg')
-  const word = read('harmony-text.svg')
+  const icon = read('icon.svg')
+  const word = read('wordmark.svg')
+  // `white` → `currentColor` : rendu identique sur fond sombre, mais la
+  // page peut le poser ailleurs sans toucher au fichier. L'or de
+  // l'icône n'est pas touché — c'est la couleur de la marque.
   word.inner = word.inner.split('fill="white"').join('fill="currentColor"')
 
-  const out = `/* Généré par scripts/build-logo.mjs — NE PAS ÉDITER À LA MAIN. */
-/* Source : « harmony/ » (livraison de design, hors dépôt) */
+  writeFileSync(
+    join(logoDir, 'harmony.ts'),
+    `/* Généré par scripts/build-logo.mjs — NE PAS ÉDITER À LA MAIN. */
+/* Source : brand/harmony/ (livraison de design, hors dépôt) */
 
 type Mark = { viewBox: string; inner: string }
 
@@ -263,11 +252,58 @@ export const HARMONY: Record<'icon' | 'wordmark', Mark> = {
     inner: ${JSON.stringify(word.inner)},
   },
 }
-`
-  writeFileSync(hmOut, out, 'utf8')
-  console.log('  ✔ harmony.ts généré')
-  console.log(`      icône    ${icon.viewBox}`)
-  console.log(`      mot      ${word.viewBox}`)
+`,
+    'utf8',
+  )
+  console.log('  ✔ harmony.ts')
 }
 
+/* ─── Les polices ─────────────────────────────────────────────── */
+
+function fonts() {
+  const cache = {}
+  const load = (film) => {
+    if (cache[film]) return cache[film]
+    const file = join(brand, 'siraj', film, 'animation.html')
+    if (!existsSync(file)) return (cache[film] = null)
+    const html = readFileSync(file, 'utf8')
+    const open = html.indexOf('<script type="__bundler/manifest">')
+    const start = html.indexOf('>', open) + 1
+    const manifest = JSON.parse(html.slice(start, html.indexOf('</script>', start)))
+    const css = html.replaceAll('\\n', '\n').replaceAll('\\"', '"')
+    const faces = css.match(/@font-face\s*\{[^}]*\}/g) || []
+    return (cache[film] = { manifest, faces })
+  }
+
+  mkdirSync(fontDir, { recursive: true })
+  let n = 0
+  for (const { film, family, weight, subset } of FONTS) {
+    const src = load(film)
+    if (!src) {
+      console.log(`  · Film « ${film} » absent — ${family} ${weight} ignorée.`)
+      continue
+    }
+    const face = src.faces.find(
+      (f) =>
+        f.includes(`'${family}'`) &&
+        f.includes(`font-weight: ${weight}`) &&
+        f.includes(SUBSETS[subset]),
+    )
+    const uuid = face && /url\("([0-9a-f-]+)"\)/.exec(face)?.[1]
+    const entry = uuid && src.manifest[uuid]
+    if (!entry) {
+      console.error(`  ✖ Introuvable dans le film ${film} : ${family} ${weight} ${subset}`)
+      process.exit(1)
+    }
+    const name = `${slug(family)}-${weight}-${subset}.woff2`
+    const buf = Buffer.from(entry.data, 'base64')
+    writeFileSync(join(fontDir, name), buf)
+    console.log(`      ${name.padEnd(28)} ${kb(buf.length)} ko`)
+    n++
+  }
+  if (n) console.log('  ✔ polices extraites')
+}
+
+marks()
 harmony()
+fonts()

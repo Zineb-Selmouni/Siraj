@@ -18,12 +18,10 @@ Context/
 # d'animation (3 Mo de bundle React/Babel). Même règle que la charte —
 # src/components/logo/marks.ts est versionné à sa place, c'est lui que
 # le build consomme (voir scripts/build-logo.mjs).
-Siraj logo refinement/
-_motion.js
-
-# Logo de l'éditeur, même règle : src/components/logo/harmony.ts est
-# versionné à sa place.
-harmony/
+# Livraison de design : signes, PNG, films, logo de l'éditeur. Les
+# fichiers générés (marks.ts, harmony.ts, public/fonts) sont versionnés
+# à leur place — le build ne dépend pas d'un dossier de livraison.
+brand/
 
 # Arbitrages de contenu : cite des notes d'intervention internes du deck
 # (dont la mise en garde sur le LLM externe). Hors dépôt.

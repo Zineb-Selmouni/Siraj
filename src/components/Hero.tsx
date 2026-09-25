@@ -1,4 +1,4 @@
-import { useCopy } from '../i18n'
+import { useLanguage } from '../i18n'
 import { SirajReveal } from './logo/reveal/SirajReveal'
 import './Hero.css'
 
@@ -20,7 +20,7 @@ import './Hero.css'
  * observateur.
  */
 export function Hero() {
-  const copy = useCopy()
+  const { copy, lang } = useLanguage()
 
   return (
     <section className="hero band--dark" id="top">
@@ -33,7 +33,12 @@ export function Hero() {
           elle qui borne le film, pas la section. La nappe, elle, reste sur
           toute la hauteur — la lumière ne s'arrête pas à un filet. */}
       <div className="hero__stage">
-        <SirajReveal surface="dark" className="hero__film" title={copy.hero.markAlt} />
+        <SirajReveal
+          surface="dark"
+          script={lang === 'ar' ? 'arabic' : 'latin'}
+          className="hero__film"
+          title={copy.hero.markAlt}
+        />
       </div>
 
       <div className="hero__grid shell">
