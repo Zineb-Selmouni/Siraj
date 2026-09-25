@@ -26,6 +26,39 @@ export const CNDP_DECLARATION = ''
 /** Adresse de repli quand l'envoi du formulaire échoue. */
 export const CONTACT_EMAIL = 'contact@harmony.ma'
 
+/**
+ * Les coordonnées de l'éditeur, telles qu'il les publie sur harmony.ma.
+ *
+ * Les numéros sont donnés à l'affichage avec leurs espaces, et en
+ * `tel:` sans aucun — un lien téléphonique n'accepte pas d'espace.
+ * D'où la paire : ce qu'on lit, et ce qu'on compose.
+ */
+export const CONTACT = {
+  mobile: ['+212 6 67 67 15 45', '+212 6 67 67 15 65'],
+  phone: ['+212 5 37 77 34 87', '+212 5 37 68 15 63'],
+  email: ['contact@harmony.ma', 'recrute@harmony.ma'],
+} as const
+
+/**
+ * Les deux adresses. `maps` construit une recherche par ADRESSE, sans
+ * coordonnées : on n'invente pas une position qu'on n'a pas relevée, et
+ * une recherche par adresse reste juste si le bâtiment est déplacé dans
+ * la base cartographique.
+ */
+export const OFFICES = [
+  {
+    id: 'head',
+    address: 'Villa n° 14, rue Annassime, bloc M, secteur 9, Hay Riad — 10100 Rabat',
+  },
+  {
+    id: 'lab',
+    address: 'Villa n° 9, rue Al Kassous, secteur 11, Hay Riad — 10100 Rabat',
+  },
+] as const
+
+export const mapsUrl = (address: string) =>
+  `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`
+
 /** Site institutionnel Harmony, cité sur la slide 15 du deck. */
 export const WEBSITE = 'www.harmony.ma'
 export const WEBSITE_URL = 'https://www.harmony.ma'

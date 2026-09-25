@@ -9,62 +9,57 @@ import './Publisher.css'
  *
  * Pour un achat public, la crédibilité de l'ÉDITEUR compte autant que
  * celle du produit : un acheteur qui engage des deniers publics veut
- * savoir à qui il s'adresse avant de savoir ce qu'il achète. La page
- * n'en disait rien — elle vendait Siraj sans jamais présenter Harmony.
+ * savoir à qui il s'adresse avant de savoir ce qu'il achète.
  *
- * La section est placée juste avant la demande de pilote : on établit
- * qui l'on est, puis on demande. L'inverse se lit comme une publicité.
+ * La bande est SOMBRE, pour deux raisons. Elle coupe la longue suite de
+ * sections claires qui précède, et c'est le moment où la page change de
+ * sujet — on ne parle plus du produit mais de la maison. Accessoirement,
+ * le logo Harmony y va dans ses couleurs : son or tombe à 1,38:1 sur le
+ * papier, contre 11,98:1 ici.
  *
- * TOUS LES CHIFFRES VIENNENT DE harmony.ma et sont attribués comme tels
- * dans la note de bas de section. Ce sont les chiffres que l'éditeur
- * publie lui-même, pas des mesures vérifiées : la nuance est portée par
- * la note, et elle doit y rester.
+ * La version précédente empilait quatre chiffres, une liste à puces et
+ * deux adresses en petit corps : trois blocs de texte gris de suite, et
+ * la même grille de chiffres qu'à la section 05. Ici la carte de visite
+ * ouvre, et les domaines suivent, numérotés comme le reste de la page.
+ *
+ * LES ADRESSES SONT DESCENDUES AU PIED DE PAGE, avec les téléphones et
+ * les e-mails. Les répéter ici et là-bas serait un doublon sur une même
+ * page ; la section dit QUI, le pied de page dit COMMENT JOINDRE.
  */
 export function Publisher() {
   const copy = useCopy()
   const p = copy.publisher
 
   return (
-    <section className="band publisher" id="editeur">
+    <section className="band band--dark publisher" id="editeur">
       <div className="shell">
         <SectionHead n="10" label={p.eyebrow} title={p.title} lede={p.lede} split />
 
-        {/* Sur plaque sombre : l'or de la marque tombe à 1,38:1 sur le
-            papier de la section, contre 11,98:1 ici. On pose le logo sur
-            un fond qui lui va plutôt que de le recolorer — ce n'est pas
-            notre marque. */}
-        <p className="pub__plate" data-reveal>
-          <HarmonyLogo title="Harmony" />
-        </p>
+        <div className="pub__card" data-reveal>
+          <HarmonyLogo className="pub__logo" title="Harmony" />
+          <dl className="pub__figures">
+            {p.figures.map((f) => (
+              <div key={f.label}>
+                <dt className="pub__value num">{f.value}</dt>
+                <dd>
+                  <strong>{f.label}</strong>
+                  <span>{f.note}</span>
+                </dd>
+              </div>
+            ))}
+          </dl>
+        </div>
 
-        <dl className="pub__figures">
-          {p.figures.map((f, i) => (
-            <div key={f.label} data-reveal style={{ '--i': i } as CSSProperties}>
-              <dt className="pub__value num">{f.value}</dt>
-              <dd>
-                <strong>{f.label}</strong>
-                <span>{f.note}</span>
-              </dd>
-            </div>
-          ))}
-        </dl>
-
-        <div className="pub__split">
-          <div className="pub__col" data-reveal>
-            <h3 className="pub__label mono">{p.pillarsTitle}</h3>
-            <ul className="pub__pillars">
-              {p.pillars.map((item) => (
-                <li key={item}>{item}</li>
-              ))}
-            </ul>
-          </div>
-
-          <div className="pub__col" data-reveal style={{ '--i': 1 } as CSSProperties}>
-            <h3 className="pub__label mono">{p.addressTitle}</h3>
-            <p className="pub__addr">{p.address}</p>
-            <h3 className="pub__label mono pub__label--2">{p.labTitle}</h3>
-            <p className="pub__addr">{p.lab}</p>
-          </div>
+        <div className="pub__domains" data-reveal>
+          <h3 className="pub__label mono">{p.pillarsTitle}</h3>
+          <ol className="pub__pillars">
+            {p.pillars.map((item, i) => (
+              <li key={item} style={{ '--i': i } as CSSProperties}>
+                <span className="pub__n mono num">{String(i + 1).padStart(2, '0')}</span>
+                <span>{item}</span>
+              </li>
+            ))}
+          </ol>
         </div>
 
         <p className="pub__note" data-reveal>

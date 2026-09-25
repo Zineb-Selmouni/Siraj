@@ -1,42 +1,64 @@
 /* ═══════════════════════════════════════════════════════════════
    L'éditeur
 
-   Même grammaire que la section des chiffres (05) : une barre forte
-   coiffe la grille, des filets d'un pixel séparent les cellules. Les
-   deux sections comptent des choses, elles se ressemblent exprès.
+   Une carte de visite, puis deux colonnes. La version précédente
+   alignait quatre chiffres, une liste à puces et deux adresses en petit
+   corps — trois blocs gris de suite, et la même grille de chiffres qu'à
+   la section 05, si bien que les deux se confondaient.
+
+   Ici le logo et les chiffres forment un seul bloc encadré : c'est la
+   carte qu'on tend. Les domaines sont numérotés comme le reste de la
+   page, et les adresses ferment la colonne de droite.
    ═══════════════════════════════════════════════════════════════ */
+
+.pub__card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(28px, 4vw, 64px);
+  margin-top: clamp(40px, 5vw, 72px);
+  padding: clamp(26px, 3vw, 40px) clamp(26px, 3.4vw, 48px);
+  border: 1px solid var(--ink-line);
+  /* Une lueur très basse, depuis l'angle du logo : la carte se détache
+     du fond sans qu'on ait à l'éclaircir. */
+  background: radial-gradient(
+    ellipse 70% 180% at 0% 50%,
+    rgb(224 177 90 / 0.07),
+    transparent 70%
+  );
+}
+
+.pub__logo {
+  font-size: clamp(2rem, 1.4rem + 1.8vw, 2.875rem);
+  flex: 0 0 auto;
+}
 
 .pub__figures {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  margin: clamp(40px, 5vw, 72px) 0 0;
-  border-top: 2px solid var(--ink);
+  gap: clamp(16px, 2vw, 32px);
+  margin: 0;
 }
 
 .pub__figures > div {
-  padding: clamp(20px, 2.4vw, 30px) clamp(16px, 2vw, 26px) clamp(20px, 2.4vw, 30px) 0;
   display: flex;
   flex-direction: column;
-  gap: 11px;
+  gap: 7px;
   min-width: 0;
 }
 
 .pub__figures > div + div {
-  padding-inline-start: clamp(16px, 2vw, 26px);
-  border-inline-start: 1px solid var(--line);
-}
-
-.pub__figures > div:last-child {
-  padding-inline-end: 0;
+  padding-inline-start: clamp(16px, 2vw, 32px);
+  border-inline-start: 1px solid var(--ink-line);
 }
 
 .pub__value {
   font-family: var(--font-display);
-  font-size: clamp(2rem, 1.3rem + 2.6vw, 3.25rem);
+  font-size: clamp(1.625rem, 1.2rem + 1.4vw, 2.375rem);
   font-weight: 600;
-  line-height: 0.98;
+  line-height: 1;
   letter-spacing: -0.02em;
-  color: var(--ink);
+  color: var(--brass-lit);
   white-space: nowrap;
 }
 
@@ -44,77 +66,100 @@
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 3px;
   min-width: 0;
 }
 
 .pub__figures strong {
   font-family: var(--font-display);
-  font-size: 0.9375rem;
-  color: var(--ink);
+  font-size: 0.875rem;
+  color: var(--on-dark);
 }
 
 .pub__figures span {
-  font-size: 0.8125rem;
-  line-height: 1.5;
-  color: var(--mute);
+  font-size: 0.75rem;
+  line-height: 1.45;
+  color: var(--on-dark-mute);
 }
 
-/* ─── Les domaines et les adresses ────────────────────────────── */
+/* ─── Les domaines ────────────────────────────────────────────────
+   En 2 × 2 sur toute la largeur, et non plus dans une colonne à côté
+   des adresses — celles-ci sont descendues au pied de page. Deux
+   rangées de deux se lisent mieux qu'une pile de quatre, et ne
+   répètent pas la grille de chiffres juste au-dessus.
+   ───────────────────────────────────────────────────────────────── */
 
-.pub__split {
-  display: grid;
-  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
-  gap: clamp(28px, 4vw, 64px);
-  margin-top: clamp(40px, 4.5vw, 68px);
+.pub__domains {
+  margin-top: clamp(34px, 4vw, 56px);
 }
 
 .pub__label {
-  color: var(--brass);
-  letter-spacing: 0.14em;
-  font-size: 0.6875rem;
+  color: var(--brass-lit);
+  letter-spacing: 0.16em;
+  font-size: 0.625rem;
   margin-bottom: 14px;
 }
 
-.pub__label--2 {
-  margin-top: 26px;
-}
-
 .pub__pillars {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  background: var(--ink-line);
+  border: 1px solid var(--ink-line);
 }
 
 .pub__pillars li {
-  padding: 13px 0;
-  border-top: 1px solid var(--line);
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  padding: clamp(15px, 1.7vw, 22px) clamp(16px, 1.8vw, 24px);
+  background: var(--ink-900);
   font-size: var(--t-small);
   line-height: 1.5;
-  color: var(--body);
+  color: var(--on-dark-soft);
 }
 
-.pub__pillars li:last-child {
-  border-bottom: 1px solid var(--line);
-}
-
-.pub__addr {
-  font-size: var(--t-small);
-  line-height: 1.6;
-  color: var(--body);
-  max-width: 34ch;
+.pub__n {
+  color: var(--brass);
+  letter-spacing: 0.08em;
+  flex: 0 0 auto;
 }
 
 .pub__note {
-  margin-top: clamp(28px, 3vw, 40px);
-  font-size: 0.8125rem;
-  color: var(--mute);
+  margin-top: clamp(20px, 2.2vw, 30px);
+  font-size: 0.75rem;
+  color: var(--on-dark-mute);
 }
 
-/* ─── Tablette : les chiffres en 2 × 2 ────────────────────────── */
+/* ─── Tablette ────────────────────────────────────────────────── */
 
-@media (max-width: 900px) {
+@media (max-width: 980px) {
+  .pub__card {
+    grid-template-columns: minmax(0, 1fr);
+    gap: clamp(24px, 4vw, 34px);
+  }
+
+  .pub__pillars {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* ─── Téléphone ───────────────────────────────────────────────── */
+
+@media (max-width: 620px) {
   .pub__figures {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0;
+  }
+
+  /* En 2 × 2, c'est la parité qui décide des filets. */
+  .pub__figures > div {
+    padding: 16px 0;
+  }
+
+  .pub__figures > div:nth-child(even) {
+    padding-inline-start: clamp(16px, 4vw, 24px);
+    border-inline-start: 1px solid var(--ink-line);
   }
 
   .pub__figures > div:nth-child(odd) {
@@ -122,50 +167,7 @@
     border-inline-start: 0;
   }
 
-  .pub__figures > div:nth-child(even) {
-    padding-inline-end: 0;
-  }
-
   .pub__figures > div:nth-child(n + 3) {
-    border-top: 1px solid var(--line);
+    border-top: 1px solid var(--ink-line);
   }
-
-  .pub__split {
-    grid-template-columns: minmax(0, 1fr);
-  }
-}
-
-/* ─── Téléphone ───────────────────────────────────────────────── */
-
-@media (max-width: 560px) {
-  .pub__figures > div {
-    padding-block: 18px;
-    gap: 8px;
-  }
-
-  .pub__value {
-    font-size: clamp(1.75rem, 6.5vw, 2.25rem);
-  }
-
-  .pub__figures strong {
-    font-size: 0.875rem;
-  }
-
-  .pub__figures span {
-    font-size: 0.75rem;
-  }
-}
-
-/* ─── La plaque de l'éditeur ──────────────────────────────────────
-   La section est sur papier ; le logo Harmony est fait pour le sombre.
-   Plutôt que de le recolorer — ce n'est pas notre marque — on lui donne
-   le fond qu'il lui faut.
-   ───────────────────────────────────────────────────────────────── */
-
-.pub__plate {
-  display: inline-flex;
-  margin-top: clamp(26px, 3vw, 38px);
-  padding: clamp(14px, 1.5vw, 20px) clamp(20px, 2.2vw, 30px);
-  background: var(--ink-900);
-  font-size: clamp(1.5rem, 1.1rem + 1.2vw, 2rem);
 }

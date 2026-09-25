@@ -59,7 +59,7 @@ export function Pilot() {
     <section className="band band--dark pilot" id="pilote">
       <div className="shell">
         <SectionHead
-          n="10"
+          n="11"
           label={copy.pilot.eyebrow}
           title={copy.pilot.title}
           lede={copy.pilot.lede}

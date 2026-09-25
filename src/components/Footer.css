@@ -5,18 +5,18 @@
 
 .foot__top {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.35fr);
   gap: clamp(32px, 4vw, 72px);
   padding-bottom: clamp(32px, 4vw, 52px);
   border-bottom: var(--rule) solid var(--ink-line);
 }
 
-/* Le lockup complet ferme la page : le signe et le nom dessinés, à la
-   taille où les lettres restent lisibles. Hauteur laissée au rapport du
-   fichier. */
+/* Le lockup complet ferme la page. Posé par la HAUTEUR : les deux
+   écritures n'ont pas le même rapport, et c'est la hauteur qui doit
+   concorder d'une langue à l'autre. */
 .foot__mark {
-  width: clamp(150px, 20vw, 186px);
-  height: auto;
+  height: clamp(50px, 6.5vw, 66px);
+  width: auto;
 }
 
 .foot__baseline {
@@ -42,15 +42,41 @@
   line-height: 1.7;
 }
 
-.foot__details {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: clamp(18px, 2.4vw, 32px);
-  margin: 0;
+/* ═══════════════════════════════════════════════════════════════
+   Les coordonnées
+
+   Deux blocs, et la distinction se voit : ce qu'on compose — mobiles,
+   fixes, e-mails, site — sur quatre colonnes serrées ; puis les deux
+   adresses, qui demandent de la place pour tenir sur peu de lignes.
+
+   Le filet en tête de chaque entrée reprend celui des chiffres et des
+   jalons : c'est la même grammaire d'un bout à l'autre de la page.
+   ═══════════════════════════════════════════════════════════════ */
+
+.foot__contact {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(22px, 2.6vw, 34px);
   align-content: start;
 }
 
-.foot__details div {
+.foot__reach,
+.foot__places {
+  display: grid;
+  gap: clamp(18px, 2.2vw, 30px);
+  margin: 0;
+}
+
+.foot__reach {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.foot__places {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.foot__reach > div,
+.foot__places > div {
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -59,27 +85,66 @@
   border-top: var(--rule) solid var(--ink-line);
 }
 
-.foot__details dt {
+.foot__reach dt,
+.foot__places dt {
   color: var(--brass-lit);
   letter-spacing: 0.14em;
+  font-size: 0.625rem;
 }
 
-.foot__details dd {
+.foot__reach dd,
+.foot__places dd {
   margin: 0;
   font-size: 0.875rem;
+  line-height: 1.5;
   color: var(--on-dark-soft);
   overflow-wrap: anywhere;
-  line-height: 1.5;
 }
 
-.foot__details a {
+/* Les numéros ne se coupent pas : un fixe marocain sur deux lignes ne
+   se compose plus. */
+.foot__reach .num {
+  white-space: nowrap;
+}
+
+.foot__places dd {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 30ch;
+}
+
+.foot__reach a,
+.foot__places a {
   text-decoration: none;
   border-bottom: var(--rule) solid transparent;
   transition: border-color var(--t-fast) var(--ease);
 }
 
-.foot__details a:hover {
+.foot__reach a:hover,
+.foot__places a:hover {
   border-bottom-color: var(--brass-lit);
+}
+
+/* L'itinéraire sort vers une carte : il se signale comme un départ. */
+.foot__dir {
+  align-self: start;
+  color: var(--brass-lit);
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+}
+
+@media (max-width: 1080px) {
+  .foot__reach {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .foot__reach,
+  .foot__places {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 .foot__bottom {

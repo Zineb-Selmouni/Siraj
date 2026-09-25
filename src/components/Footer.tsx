@@ -1,9 +1,21 @@
 import { useCopy } from '../i18n'
-import { CONTACT_EMAIL, WEBSITE, WEBSITE_URL } from '../config'
+import { CONTACT, OFFICES, WEBSITE, WEBSITE_URL, mapsUrl } from '../config'
 import { SirajLogo } from './logo/SirajLogo'
 import { HarmonyLogo } from './logo/HarmonyLogo'
 import './Footer.css'
 
+/**
+ * Le pied de page.
+ *
+ * Il porte maintenant toutes les coordonnées de l'éditeur : mobiles,
+ * téléphone et fax, e-mails, et les deux adresses. La section 10 dit
+ * QUI est l'éditeur, le pied de page dit COMMENT LE JOINDRE — les
+ * adresses n'y figurent donc plus, un doublon sur une même page
+ * n'apporte rien.
+ *
+ * Les numéros sont affichés avec leurs espaces et composés sans : un
+ * `tel:` n'en accepte aucun.
+ */
 export function Footer() {
   const copy = useCopy()
   const year = new Date().getFullYear()
@@ -27,26 +39,68 @@ export function Footer() {
             </p>
           </div>
 
-          <dl className="foot__details">
-            <div>
-              <dt className="mono">{copy.footer.contactTitle}</dt>
-              <dd>
-                <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
-              </dd>
-            </div>
-            <div>
-              <dt className="mono">{copy.footer.siteTitle}</dt>
-              <dd>
-                <a href={WEBSITE_URL} target="_blank" rel="noreferrer noopener">
-                  {WEBSITE}
-                </a>
-              </dd>
-            </div>
-            <div>
-              <dt className="mono">{copy.footer.officeTitle}</dt>
-              <dd>{copy.footer.office}</dd>
-            </div>
-          </dl>
+          <div className="foot__contact">
+            <dl className="foot__reach">
+              <div>
+                <dt className="mono">{copy.footer.mobileTitle}</dt>
+                {CONTACT.mobile.map((n) => (
+                  <dd key={n}>
+                    <a className="num" href={`tel:${n.replace(/\s/g, '')}`}>
+                      {n}
+                    </a>
+                  </dd>
+                ))}
+              </div>
+              <div>
+                <dt className="mono">{copy.footer.phoneTitle}</dt>
+                {CONTACT.phone.map((n) => (
+                  <dd key={n}>
+                    <a className="num" href={`tel:${n.replace(/\s/g, '')}`}>
+                      {n}
+                    </a>
+                  </dd>
+                ))}
+              </div>
+              <div>
+                <dt className="mono">{copy.footer.emailTitle}</dt>
+                {CONTACT.email.map((e) => (
+                  <dd key={e}>
+                    <a href={`mailto:${e}`}>{e}</a>
+                  </dd>
+                ))}
+              </div>
+              <div>
+                <dt className="mono">{copy.footer.siteTitle}</dt>
+                <dd>
+                  <a href={WEBSITE_URL} target="_blank" rel="noreferrer noopener">
+                    {WEBSITE}
+                  </a>
+                </dd>
+              </div>
+            </dl>
+
+            <dl className="foot__places">
+              {OFFICES.map((o) => (
+                <div key={o.id}>
+                  <dt className="mono">
+                    {o.id === 'head' ? copy.footer.headOfficeTitle : copy.footer.labTitle}
+                  </dt>
+                  <dd>
+                    <span>{o.address}</span>
+                    <a
+                      className="foot__dir"
+                      href={mapsUrl(o.address)}
+                      target="_blank"
+                      rel="noreferrer noopener"
+                    >
+                      {copy.footer.directions}
+                      <span aria-hidden="true">&nbsp;&rarr;</span>
+                    </a>
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          </div>
         </div>
 
         <div className="foot__bottom">

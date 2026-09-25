@@ -34,171 +34,87 @@ Context/Siraj360_design-tokens_v6.2_2026-09.json
 Mise à jour de la charte : déposer le nouveau JSON dans `Context/` (le script
 prend le plus récent par ordre alphabétique) et relancer `npm run dev`.
 
-### Le signe
+### Les fichiers de marque
 
-Le logo vient désormais de la livraison de design **« Siraj logo refinement »**
-(SVG, PNG, et un fichier d'animation). Il remplace le signe qui était
-reconstruit à la main d'après `logo.geometry`.
+Toute la livraison de design tient dans `brand/`, **hors dépôt** comme la
+charte. Les fichiers générés, eux, sont versionnés : le build ne dépend pas
+d'un dossier de livraison.
 
-`scripts/build-logo.mjs` transforme les SVG livrés en
-`src/components/logo/marks.ts`. Comme la charte, la livraison est **hors
-dépôt** ; c'est le fichier généré qui est versionné, et c'est lui que le build
-consomme. `npm run logo` le régénère, `npm run assets` enchaîne charte et logo,
-et `dev` comme `build` appellent `assets`.
+```
+brand/
+  harmony/            icon.svg, wordmark.svg
+  siraj/
+    latin/            animation.html, svg/, png/
+    arabic/           animation.html, svg/, png/
+```
 
-Le script fait quatre choses, chacune nécessaire :
+Les noms sont normalisés : `symbol-transparent.svg`, `compact-white-512.png`,
+`animation.html`. La livraison mélangeait `SIRAJ_`, `SIRAJ_AR_`, `white` et
+`blanc`, un dossier `Siraj_Arabe` imbriqué et un dossier `harmony` à la racine ;
+l'écriture est maintenant portée par le CHEMIN, pas par le nom de fichier, et
+il n'y a qu'une langue de nommage.
 
-|                       |                                                                                                                                                                  |
-| --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Métadonnées           | chaque SVG embarque un manifeste C2PA en base64 — près de 8 ko sur 17, soit 45 % du fichier, qu'aucun navigateur ne lit                                          |
-| Identifiants          | les variantes déclarent les mêmes ids de dégradés ; sur une même page, `url(#siraj-gold-metal)` résoudrait au hasard de l'ordre du DOM. Préfixés `sjs-` / `sjc-` |
-| Classes               | chaque groupe nommé reçoit une classe stable (`sj-beam`, `sj-lantern`…), pour que l'animation vise la même chose d'une variante à l'autre                        |
-| Encre sur fond sombre | voir la réserve ci-dessous                                                                                                                                       |
+`npm run logo` produit :
 
-Deux lockups sont exposés : `symbol` (le signe seul) et `compact` (signe +
-mot-symbole). La variante `full` est écartée — elle compose sa signature en
-`<text>` avec **Jost**, une police que la page ne charge pas ; le rendu
-dépendrait de ce qui est installé sur la machine du visiteur.
+|                                  |                                          |
+| -------------------------------- | ---------------------------------------- |
+| `src/components/logo/marks.ts`   | les signes, par écriture et par variante |
+| `src/components/logo/harmony.ts` | le logo de l'éditeur                     |
+| `public/fonts/*.woff2`           | les polices que les films composent      |
 
-> ✅ **Le mot-symbole est enfin DESSINÉ.** La charte interdit de le recomposer
+Le script fait quatre choses sur chaque SVG, chacune nécessaire :
+
+|                       |                                                                                                                                                                                                                                                                       |
+| --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Métadonnées           | chaque fichier embarque un manifeste C2PA en base64 — près de 8 ko sur 17, qu'aucun navigateur ne lit                                                                                                                                                                 |
+| Identifiants          | remplacés par un jeton `%ID%` que **chaque instance** résout à l'exécution. Un préfixe fixe suffisait tant qu'un lockup ne paraissait qu'une fois ; l'en-tête et le pied de page affichent le même, et ses ids de dégradés se retrouvaient en double dans le document |
+| Classes               | chaque groupe nommé reçoit une classe stable (`sj-beam`, `sj-lantern`…)                                                                                                                                                                                               |
+| Encre sur fond sombre | voir la réserve ci-dessous                                                                                                                                                                                                                                            |
+
+### Deux écritures
+
+La livraison fournit le lockup en latin (SIRAJ) et en arabe (سراج). L'écriture
+suit la langue de la page, sans que l'appelant ait à s'en occuper.
+
+**Le signe est identique dans les deux** — les fichiers `symbol-*` sont au même
+octet près : un phare n'a pas d'écriture. Seuls `compact` et `full` diffèrent.
+
+> Les deux lockups n'ont **pas le même rapport** : 2,87 en latin, 2,04 en arabe.
+> Les dimensionner par la largeur donnait deux hauteurs différentes au même
+> endroit — dans la barre de navigation, l'arabe dépassait de 41 %. C'est donc
+> la HAUTEUR qui est posée aux emplacements, et la largeur qui suit.
+
+> ✅ **Le mot-symbole latin est DESSINÉ.** La charte interdit de le recomposer
 > dans une police — « c'est un dessin » — et la page, faute de fichier, le
-> simulait en Sora dans l'en-tête. La livraison fournit chaque lettre en
-> tracé (`sj-letter-S`, `-I`, `-R`, `-A`, `-J`). L'en-tête et le pied de page
-> affichent maintenant le **lockup officiel**. Le contournement est levé.
+> simulait en Sora dans l'en-tête. Chaque lettre est maintenant un tracé
+> (`sj-letter-S`, `-I`, `-R`, `-A`, `-J`). Le contournement est levé.
+
+> ⚠ **Le mot-symbole arabe, lui, est COMPOSÉ** en Reem Kufi, dans le film comme
+> dans le lockup. C'est le choix du studio, pas le nôtre : la livraison le fait
+> ainsi. L'arabe étant une écriture liée, il n'a pas de lettres séparables.
+
+**Le point du ج est en or** — la signature de la marque, comme le triangle d'or
+dans le A latin. Le mot étant composé et non tracé, on ne peut pas viser un
+tracé nommé : le film RASTÉRISE le mot, cherche ses composantes connexes, et
+identifie le point comme la petite composante isolée qui tombe dans la boîte du
+corps. Les coordonnées obtenues sont relatives au corps de la fonte, donc
+valables à n'importe quelle échelle. Le résultat est mis en cache — mais
+seulement une fois Reem Kufi réellement chargée, sans quoi on mémoriserait la
+position du point dans la police de repli.
+
+> Les signes arabes livrés sont **exportés depuis le film** : leurs
+> identifiants sont ceux de l'animation (`sr-beam`, `sr-tower-clip`,
+> `sr-jeem-dot`) et non des noms sémantiques, et ils portent donc moins de
+> classes structurelles que les latins. Leurs volets sont vérifiés **à leur
+> valeur finale** — ce sont bien des logos posés, pas des images arrêtées en
+> cours d'animation.
 
 > ⚠ **L'encre sur fond sombre est DÉDUITE, à faire confirmer.** La livraison ne
-> contient que des lockups pour fond clair : `_white` ne fait qu'ajouter un
+> contient que des lockups pour fond clair : `white` ne fait qu'ajouter un
 > rectangle blanc derrière le même dessin. Or l'encre du mot-symbole est un
-> charbon `#17191C`, qui tombe à **1,05:1** sur le bleu-nuit de la page —
-> invisible. `build-logo.mjs` en dérive une version claire en remappant cinq
-> valeurs de gris (28 occurrences). **Le signe seul n'est pas concerné** : il
-> ne porte aucune de ces valeurs et était déjà lisible sur fond sombre. À
-> arbitrer avec le studio avant mise en ligne — soit la version dérivée est
-> validée, soit un lockup sur fond sombre est livré.
-
----
-
-## Direction visuelle
-
-La page a été entièrement redessinée. Les trois défauts corrigés :
-
-1. **Incohérence.** Chaque section avait fini par recevoir son effet propre —
-   balayage radar, impulsion le long d'un rail, équerres de cadrage, sceaux qui
-   se remplissent, liseré conique au survol, compteurs animés. Empilés, ces
-   effets ne composent pas un système, ils composent un bruit.
-2. **Or saturé partout.** L'or de la charte (`#FFC933`) est une couleur de
-   _signe_. Étalée sur des bordures, des filets, des puces et des aplats, elle
-   fait retomber l'ensemble du côté du gabarit générique.
-3. **Le signe en illustration d'ouverture.** Un logo déployé à 600 px se lit
-   comme une vignette. C'était le signal « petit budget » le plus fort de la page.
-
-### Palette
-
-`src/styles/theme.css` définit la palette de la PAGE ; `tokens.css` (généré)
-reste la vérité de la MARQUE, et le signe garde ses couleurs exactes.
-
-|               |                                                                                        |
-| ------------- | -------------------------------------------------------------------------------------- |
-| Fond dominant | **papier** `#F5F2EC` — un document institutionnel se lit sur clair                     |
-| Ponctuation   | **bleu-nuit** `#0A1425` — ouverture, différenciateur, positionnement, passage à l'acte |
-| Accent        | **laiton** `#9A742A` — un or rabattu, lisible sur papier                               |
-| Point allumé  | or de la charte `#FFC933`, réservé au signe et aux pastilles d'état                    |
-
-Un seul élément saturé dans un champ sourd se remarque ; vingt ne se
-remarquent plus. C'est tout le principe du passage à un accent laiton.
-
-### Typographie
-
-**IBM Plex, une seule superfamille, quatre rôles.**
-
-| Rôle              | Face                             | Où                                                               |
-| ----------------- | -------------------------------- | ---------------------------------------------------------------- |
-| Titres            | IBM Plex **Serif** 600           | titres de section, titre d'ouverture, grands chiffres éditoriaux |
-| Texte & interface | IBM Plex **Sans** 400/500/600    | corps, boutons, navigation, chiffres de la console               |
-| Libellés          | IBM Plex **Mono** 400/500        | numéros de section, intitulés, horodatages, langues, scores      |
-| Arabe             | IBM Plex **Sans Arabic** 500/600 | سراج, mentions en arabe                                          |
-
-La pile précédente venait de la charte : Sora en titrage, Manrope en texte.
-Deux linéales géométriques de proportions voisines — le couple ne produisait
-**aucun écart de registre** entre titre et texte, et c'est une bonne part de
-ce qui faisait « gabarit générique ». Serif contre linéale creuse cet écart,
-tout en restant de la même souche.
-
-Le partage des rôles est délibéré : le serif tient l'éditorial, la linéale
-tient tout ce qui s'utilise. Un bouton est une commande, pas un titre ; les
-chiffres de la console appartiennent à un outil, pas à un article.
-
-**Plex Sans Arabic remplace Cairo** — c'est le gain le moins visible et le
-plus utile. Le français et l'arabe partagent enfin des proportions, une
-hauteur d'œil et une graisse, parce qu'ils ont été dessinés ensemble. Sur une
-page bilingue, cela relève du fonctionnement autant que de l'allure.
-
-> ⚠ **Écart de charte.** La charte prescrit Sora / Manrope / Cairo. Ces
-> valeurs restent disponibles dans `tokens.css`, préfixées
-> `--charter-font-*` : déclarées comme référence de marque — imprimés,
-> signe — mais jamais appliquées par la page. Rien n'est masqué en douce.
-> À valider auprès du responsable de la charte, au même titre que l'écart
-> de palette.
-
-### Mouvement
-
-**Un seul geste, partout.** Le contenu se résout : 14 px vers le haut et
-opacité, même courbe (`cubic-bezier(.22,1,.36,1)`), même durée, échelonnement
-réglé par `--i`. C'est tout.
-
-**Un seul élément bouge en continu :** le flux de veille. Son mouvement porte
-du sens — des mentions arrivent. Rien d'autre ne boucle.
-
-GSAP a été retiré : sans orchestration complexe à tenir, il ne payait plus
-ses 32 ko. Le système tient en 60 lignes (`src/lib/reveal.ts`) et le bundle
-est passé de 96 ko à 63 ko gzippés.
-
-Sécurités, dans cet ordre : le masquage n'existe que si `js-reveal` est posé
-sur `<html>` par le script ; en mouvement réduit la classe n'est jamais posée ;
-et si l'observateur n'a rien révélé au bout de 2,5 s, tout est révélé d'office.
-Aucun contenu ne dépend de l'animation pour être lisible.
-
-### Structure
-
-**Le signe est en ouverture, posé sur une plaque.** Deux équerres, un filet,
-une légende en monospace : la plaque le désigne comme une marque au lieu de
-le laisser flotter comme une image collée. Dans la nouvelle palette il est le
-seul élément saturé de la page — d'où sa présence, sans qu'il ait besoin
-d'occuper la moitié de l'écran.
-
-**La console de veille a sa propre section** — _Le poste de travail_, reprise
-de la slide 6 du deck, et elle prend toute la largeur : c'est la démonstration
-du produit, et une console rangée dans une colonne se lit comme un encart.
-
-Une liste bordée n'est pas un tableau de bord — elle montre des lignes, pas
-un état. La console montre un état, en six régions séparées par des filets :
-
-|             |                                                                              |
-| ----------- | ---------------------------------------------------------------------------- |
-| Barre       | nom de l'application, contrôle segmenté 24 h / 7 j / 30 j, témoin d'activité |
-| Indicateurs | mentions, sources actives, alertes, latence — avec variation et direction    |
-| Volume      | 24 barres horaires, pic marqué, barre de l'heure en cours qui respire        |
-| Langues     | répartition AR / Darija / FR / EN                                            |
-| Flux        | les mentions qui arrivent, la plus ancienne qui s'estompe                    |
-| Pied        | répartition du sentiment, décompte, mention d'illustration                   |
-
-**Les régions se répondent.** À chaque mention : le décompte monte, la
-dernière barre de la courbe grandit, et toutes les six mentions l'heure
-bascule — la série glisse et une nouvelle barre démarre bas. La jauge de
-sentiment se recalcule. C'est ce qui distingue un tableau de bord d'une
-capture d'écran animée.
-
-Les incréments sont cyclés, pas tirés au sort : le rendu reste déterministe.
-La console s'adapte à SA largeur (`container-type`), pas à celle de l'écran —
-elle reste donc juste où qu'on la place.
-
-Le différenciateur darija suit, sur bleu-nuit : une mention translittérée
-décomposée comme le moteur la voit — entités marquées **dans** le texte,
-langue détectée, sentiment scoré, thématique, traduction.
-
-Dix sections numérotées, un seul motif d'en-tête (`SectionHead`), et un
-rythme de fonds qui réserve le bleu-nuit aux quatre moments qui portent :
-ouverture, différenciateur, positionnement, passage à l'acte.
+> charbon `#17191C`, qui tombe à **1,13:1** sur le bleu-nuit de la page.
+> `build-logo.mjs` en dérive une version claire en remappant cinq valeurs de
+> gris. **Le signe seul n'est pas concerné** : il n'en porte aucune.
 
 ### Le film du logo
 
@@ -241,13 +157,30 @@ Jost déjà chargée ; la page re-mesure une fois `document.fonts` prête, sans 
 les deux filets d'or qui encadrent le sous-titre se placeraient d'après la
 police de repli.
 
-**Jost.** Le film compose son sous-titre et sa signature en Jost et embarque la
-fonte dans son bundle. `build-logo.mjs` l'en extrait vers `public/fonts/` —
-latin et latin-ext ; le cyrillique est laissé de côté, aucune des deux lignes
-n'en contient un caractère. La reprendre là plutôt que chez Google évite de
-faire dépendre d'un serveur américain une page qui vend l'hébergement
-souverain. La livraison ne fournit que la graisse 500 et la déclare pour 500 ET
-600 : le 600 est donc **synthétisé** par le navigateur. La page fait pareil.
+**Le film existe en deux écritures.** `script="arabic"` compose le mot-symbole
+en Reem Kufi et les deux lignes en Tajawal, décale la composition de (110, -40)
+— l'arabe est plus large et moins haut que SIRAJ, son centre optique n'est pas
+au même endroit — et remplace la montée lettre à lettre par un volet qui
+découvre le mot **de droite à gauche**, dans le sens de lecture. Tout le reste
+du film est identique : mêmes repères, mêmes durées, mêmes courbes.
+
+> Le mot arabe étant composé et non tracé, sa boîte dépend de la fonte : elle
+> est MESURÉE au canvas, et les deux lignes se placent sous sa base réelle.
+> D'où la re-mesure une fois `document.fonts` prête — sans elle, tout se cale
+> sur la police de repli.
+
+**Les polices.** Les films composent leur texte en Jost (latin), Reem Kufi et
+Tajawal (arabe), et embarquent les fontes dans leur bundle. `build-logo.mjs` les en extrait vers `public/fonts/`.
+Seuls les sous-ensembles utiles sont servis : les textes latins n'ont pas un
+caractère cyrillique, les textes arabes pas un caractère latin. Les reprendre
+là plutôt que chez Google évite de faire dépendre d'un serveur américain une
+page qui vend l'hébergement souverain.
+
+|                   |                  |                                                                                       |
+| ----------------- | ---------------- | ------------------------------------------------------------------------------------- |
+| Jost 500          | latin, latin-ext | déclarée aussi pour 600, que le navigateur **synthétise** — c'est ce que fait le film |
+| Reem Kufi 700     | arabe            | le mot-symbole                                                                        |
+| Tajawal 500 / 700 | arabe            | les deux lignes                                                                       |
 
 > ⚠ **Le film est en français, en dur.** « PLATEFORME DE VEILLE » et « ÉCLAIRER
 > AUJOURD'HUI, ANTICIPER DEMAIN » sont composés dans la scène livrée. Ils
@@ -462,54 +395,35 @@ gestes différents pour une même marque.
 > 12 Témoignages. Elles attendent `CLIENT_LOGOS` et `TESTIMONIALS` dans
 > `src/proof.ts`.
 
-### Les sections de preuve sociale
+### Le pied de page porte les coordonnées
 
-`src/proof.ts` tient les deux tableaux, vides, et un interrupteur :
+Mobiles, téléphone et fax, e-mails, site, et les deux adresses avec leur lien
+d'itinéraire. Les numéros sont **affichés avec leurs espaces et composés sans**
+— un `tel:` n'en accepte aucun — et ne se coupent jamais en fin de ligne : un
+fixe marocain sur deux lignes ne se compose plus.
 
-| État           | Production                  | Développement                      |
-| -------------- | --------------------------- | ---------------------------------- |
-| Tableau vide   | **La section n'existe pas** | Gabarit visible, hachuré et marqué |
-| Tableau rempli | La section s'affiche        | La section s'affiche               |
+> Les adresses ne figurent plus dans la section 10. La répéter ici et là-bas
+> serait un doublon sur une même page : **la section dit QUI est l'éditeur, le
+> pied de page dit COMMENT LE JOINDRE.** Les domaines de la section 10 passent
+> donc en 2 × 2 sur toute la largeur.
 
-Il n'y a donc **aucun chemin** par lequel un gabarit atteigne le public. Le
-gabarit est placé derrière `SHOW_PLACEHOLDERS` seul, et non derrière une
-condition mixte : la constante étant statiquement fausse en production, le
-compilateur supprime la branche entière. Vérifié sur le bundle publié — aucune
-des chaînes du gabarit n'y subsiste.
+Le lien d'itinéraire construit une recherche **par adresse**, sans coordonnées :
+on ne publie pas une position qu'on n'a pas relevée, et une recherche par
+adresse reste juste si le bâtiment se déplace dans la base cartographique.
 
-`VITE_SHOW_PLACEHOLDERS=1` force l'affichage, pour faire relire une
-préversion. **Ne jamais poser cette variable sur l'environnement Netlify de
-production.**
+### Preuve sociale : supprimée, et pourquoi c'est encore ouvert
 
-> Le gabarit des témoignages montre les CHAMPS à recueillir — citation, nom,
-> fonction, organisation — et rien d'autre. Pas de fausse citation, même en
-> maquette : elle serait attribuée à une personne nommée.
+Les sections Références et Témoignages ont été retirées. Elles n'avaient que du
+contenu de démonstration, et une section « nos clients » vide est pire que pas
+de section du tout.
 
-> Les logos clients vont dans `public/logos/`. La bande les ramène à une seule
-> couleur et à une hauteur optique commune, et leur rend leurs couleurs au
-> survol : sans cela, un logo rouge vif écrase ses voisins.
-
-> ⚠ **Écart entre le site et le produit.** Le retour ouvre là-dessus et c'est
-> le point le plus lourd : la page annonce « pilote terrain réalisé » et
-> « usage réel sur des sujets de veille clients ». Tant que le produit ne les
-> soutient pas, ces phrases sont un risque commercial — et, devant un acheteur
-> public, un risque tout court. Le correctif n'est pas technique : soit le
-> produit rattrape la page, soit la page redescend au niveau du produit. La
-> seconde option se fait en une heure, sur les sections 05 et 06.
-
----
-
----
-
-## Déploiement — Netlify
-
-```bash
-npm run check   # typage + format + lint + build : la porte avant de pousser
-```
-
-Tout est décrit dans `netlify.toml` : commande de build, dossier publié,
-Node épinglé en 22, en-têtes de sécurité et de cache. Il n'y a rien à
-configurer dans l'interface Netlify hormis le formulaire (voir plus bas).
+> ⚠ **Le reproche de la relecture tient toujours** : la page annonce « pilote
+> terrain réalisé » et « usage réel sur des sujets de veille clients » sans rien
+> montrer. Le retirer ne le règle pas, cela le rend seulement moins visible.
+> Trois voies, par ordre de force : une référence nommée avec accord écrit ; un
+> cas anonymisé mais chiffré (« une institution publique marocaine, pilote de
+> six mois, N sources ») ; ou, à défaut, redescendre les affirmations des
+> sections 05 et 06 au niveau de ce que le produit soutient.
 
 ### Le build ne dépend plus de la charte
 
